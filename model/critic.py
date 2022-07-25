@@ -7,7 +7,7 @@ class Critic(tf.keras.Model):
                  hidden_sizes,
                  hidden_activation='tanh',
                  output_activation=None,
-                 learning_rate='1e-3'):
+                 learning_rate=1e-3):
 
         super(Critic, self).__init__()
 
@@ -29,10 +29,13 @@ class Critic(tf.keras.Model):
 
         return output
 
-    @tf.function
-    def train_step(self):
-        tf.print('train')
-        pass
+    # @tf.function
+    def train_step(self, states, returns):
+        with tf.GradientTape() as tape:
+            loss = tf.reduce_mean((returns - self(states)) ** 2)
+
+        grads = tape.gradient(loss, self.trainable_variables)
+        self.optimizer.apply_gradients(zip(grads, self.trainable_variables))
 
 
 
