@@ -5,7 +5,7 @@ class Critic(tf.keras.Model):
 
     def __init__(self,
                  hidden_sizes,
-                 hidden_activation='tanh',
+                 hidden_activation=tf.tanh,
                  output_activation=None,
                  learning_rate=1e-3):
 
@@ -26,10 +26,11 @@ class Critic(tf.keras.Model):
             output = dense(output)
 
         output = self.output_layer(output)
+        output = tf.squeeze(output, axis=1)
 
         return output
 
-    # @tf.function
+    @tf.function
     def train_step(self, states, returns):
         with tf.GradientTape() as tape:
             loss = tf.reduce_mean((returns - self(states)) ** 2)

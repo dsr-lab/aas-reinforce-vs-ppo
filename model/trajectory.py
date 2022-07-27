@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-
+import scipy.signal
 
 class Trajectory:
 
@@ -8,29 +8,23 @@ class Trajectory:
         self.gamma = gamma
         self.lamda = lamda
 
-        self._init_episode_variables()
-        self._init_trajectory_variables()
+        self.new_trajectory()
 
     def new_trajectory(self):
         self._init_trajectory_variables()
-        self.new_episode()
-
-    def new_episode(self):
         self._init_episode_variables()
 
-    def add_episode_observation(self, state, action, reward, value, action_probability, end_state=False):
+    def add_episode_observation(self, state, action, reward, value, action_probability):
 
         state = tf.squeeze(state, axis=0)
+        action = tf.squeeze(action, axis=0)
+        action_probability = tf.squeeze(action_probability, axis=0)
 
-        if end_state:
-            self.episode_rewards.append(reward)
-            self.episode_values.append(value)
-        else:
-            self.episode_states.append(state)
-            self.episode_actions.append(action)
-            self.episode_rewards.append(reward)
-            self.episode_values.append(value)
-            self.episode_action_probabilities.append(action_probability)
+        self.episode_states.append(state)
+        self.episode_actions.append(action)
+        self.episode_rewards.append(reward)
+        self.episode_values.append(value)
+        self.episode_action_probabilities.append(action_probability)
 
     def complete_episode(self, value):
         # self.add_episode_observation(None, None, value, value, None, end_state=True)
@@ -61,7 +55,7 @@ class Trajectory:
         delta = rewards[:-1] + self.gamma * values[1:] - values[:-1]
 
         advantages = self._compute_discounted_cumulative_sum(delta, self.gamma * self.lamda)
-        returns = self._compute_discounted_cumulative_sum(self.episode_rewards, self.gamma)
+        returns = self._compute_discounted_cumulative_sum(rewards, self.gamma)[:-1]
 
         self.trajectory_states.append(self.episode_states)
         self.trajectory_actions.append(self.episode_actions)
@@ -69,15 +63,15 @@ class Trajectory:
         self.trajectory_returns.append(returns)
         self.trajectory_advantages.append(advantages)
 
-        self.new_episode()
+        self._init_episode_variables()
 
     def get_trajectory(self):
 
-        return self._flat_list(self.trajectory_states), \
-               self._flat_list(self.trajectory_actions), \
-               self._flat_list(self.trajectory_action_probabilities), \
-               self._flat_list(self.trajectory_returns), \
-               self._flat_list(self.trajectory_advantages)
+        return self._flat_list(self.trajectory_states, np.float32), \
+               self._flat_list(self.trajectory_actions, np.int32), \
+               self._flat_list(self.trajectory_action_probabilities, np.float32), \
+               self._flat_list(self.trajectory_returns, np.float32), \
+               self._flat_list(self.trajectory_advantages, np.float32)
 
     def _init_episode_variables(self):
         self.episode_states = []
@@ -95,6 +89,8 @@ class Trajectory:
 
     @staticmethod
     def _compute_discounted_cumulative_sum(x, discount_rate):
+        return scipy.signal.lfilter([1], [1, float(-discount_rate)], x[::-1], axis=0)[::-1]
+        '''
         n_elements = len(x)
         result = np.zeros(n_elements)
         last_value = 0
@@ -104,9 +100,10 @@ class Trajectory:
             last_value = result[n_elements - i - 1]
 
         return result
+        '''
 
     @staticmethod
-    def _flat_list(unflattened_list):
+    def _flat_list(unflattened_list, dtype):
         flatten_list = [x for xs in unflattened_list for x in xs]
-        numpy_list = np.array(flatten_list)
+        numpy_list = np.array(flatten_list, dtype=dtype)
         return numpy_list

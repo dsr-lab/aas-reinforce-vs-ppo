@@ -1,13 +1,14 @@
 import tensorflow as tf
 import numpy as np
 
+
 class Actor(tf.keras.Model):
 
     def __init__(self,
                  hidden_sizes,
                  n_actions,
-                 hidden_activation='tanh',
-                 output_activation='softmax',
+                 hidden_activation=tf.tanh,
+                 output_activation=None,
                  learning_rate=3e-4,
                  clip_ratio=0.2):
 
@@ -32,19 +33,21 @@ class Actor(tf.keras.Model):
 
         return output
 
-    # @tf.function
-    def train_step(self, states, actions, action_probabilities, returns, advantages):
+    @tf.function
+    def train_step(self, states, actions, action_probabilities, advantages):
         with tf.GradientTape() as tape:
-            policy_logits = self(states)
-            new_action_probabilities = self._compute_probabilities(policy_logits, actions)
+            logits = self(states)
 
-            ratio = action_probabilities / new_action_probabilities
+            ratio = self._compute_probabilities(logits, actions) / action_probabilities
 
-            lower_bound_advantage = np.zeros(advantages.shape)
-            lower_bound_advantage[advantages > 0] = advantages[advantages > 0] * (1 + self.clip_ratio)
-            lower_bound_advantage[advantages <= 0] = advantages[advantages <= 0] * (1 - self.clip_ratio)
+            min_advantage = tf.where(
+                advantages > 0,
+                advantages * (1 + self.clip_ratio),
+                advantages * (1 - self.clip_ratio),
+            )
+
             loss = -tf.reduce_mean(
-                tf.minimum(ratio * advantages, lower_bound_advantage)
+                tf.minimum(ratio * advantages, min_advantage)
             )
 
         grads = tape.gradient(loss, self.trainable_variables)
@@ -52,9 +55,10 @@ class Actor(tf.keras.Model):
 
         # TODO: add KL Trick?
 
+    @tf.function
     def get_action(self, state):
         policy_logits = self(state)
-        action = tf.random.categorical(policy_logits, 1).numpy().flatten()[0]  # TODO: optimize
+        action = tf.squeeze(tf.random.categorical(policy_logits, 1), axis=1)
         action_probability = self._compute_probabilities(policy_logits, [action])[0]
 
         return action, action_probability
