@@ -1,7 +1,6 @@
 import config  # TODO: REMOVE
 import tensorflow as tf
 
-from buffer import Buffer
 from model.actor import Actor
 from model.critic import Critic
 from model.trajectory import Trajectory
