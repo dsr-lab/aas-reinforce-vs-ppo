@@ -54,7 +54,7 @@ class PPO:
 
                 for horizon_t in range(HORIZON):
 
-                    self.environment.render()
+                    # self.environment.render()
 
                     action, action_probability = self.actor.get_action(state)
 
