@@ -123,3 +123,5 @@ class ModelTrainer:
                 f'Epoch: {iteration + 1} -  Win: {trajectory.n_wins} - Loss: {trajectory.n_loss} - incomplete: {trajectory.n_incomplete} - ratio: - winRatio: {win_ratio}'
             )
 
+        self.model.save('weights/')
+
