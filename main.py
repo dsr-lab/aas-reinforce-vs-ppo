@@ -4,8 +4,6 @@ from model_trainer import ModelTrainer
 
 
 def main():
-    game_name = 'ninja'
-    print(game_name)
     env = EnvironmentWrapper(num=config.N_AGENTS, env_name=config.GAME_NAME, render_mode=RenderMode.off)
     model_trainer = ModelTrainer(environment=env)
     model_trainer.train()
