@@ -1,21 +1,10 @@
 GAME_NAME = 'ninja'
 
-# N_AGENTS = 32
-# ITERATIONS = 250
-# AGENT_HORIZON = 1024
-# BATCH_SIZE = 64
-# EPOCHS_MODEL_UPDATE = 15
-# RANDOMIZE_SAMPLES = True
-# AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
-# BACKBONE_TYPE = 'nature'  # valid values ['impala', 'nature']
-# SAVE_WEIGHTS = True
-# WEIGHTS_PATH = 'weights/'
-
-N_AGENTS = 16
-ITERATIONS = 2
-AGENT_HORIZON = 1000
+N_AGENTS = 32
+ITERATIONS = 250
+AGENT_HORIZON = 1024
 BATCH_SIZE = 64
-EPOCHS_MODEL_UPDATE = 3
+EPOCHS_MODEL_UPDATE = 15
 RANDOMIZE_SAMPLES = True
 AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
 BACKBONE_TYPE = 'nature'  # valid values ['impala', 'nature']
