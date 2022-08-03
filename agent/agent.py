@@ -15,7 +15,18 @@ class Agent(tf.keras.Model):
 
         super(Agent, self).__init__()
 
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+        # Init Adam parameters as tf.Variable so as to avoid warnings when restoring model weights
+        # https://github.com/tensorflow/tensorflow/issues/33150#issuecomment-659968267
+        self.optimizer = tf.keras.optimizers.Adam(
+            learning_rate=tf.Variable(learning_rate),
+            beta_1=tf.Variable(0.9),
+            beta_2=tf.Variable(0.999),
+            epsilon=tf.Variable(1e-7),
+        )
+        self.optimizer.iterations  # Force the creation of the optimizer.iter variable
+        self.optimizer.decay = tf.Variable(0.0)
+
+
 
         # Backbone
         if backbone_type == 'impala':

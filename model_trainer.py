@@ -1,7 +1,10 @@
+import os
 
-
-import config  # TODO: REMOVE
+import config
 import tensorflow as tf
+
+# import absl.logging
+# absl.logging.set_verbosity(absl.logging.ERROR)
 
 from agent.ppo_agent import PPOAgent
 
@@ -29,7 +32,17 @@ class ModelTrainer:
             self.model = ReinforceAgent(n_actions=self.environment.get_n_actions(),
                                         backbone_type=config.BACKBONE_TYPE)
 
+        # self.model = tf.keras.models.load_model(config.WEIGHTS_PATH)
+
         self.model(model_input)
+        self.model_checkpoint = tf.train.Checkpoint(optimizer=self.model.optimizer, model=self.model)
+
+        last_checkpoint = tf.train.latest_checkpoint(config.WEIGHTS_PATH)
+        if last_checkpoint != None:
+            a = self.model_checkpoint.restore(tf.train.latest_checkpoint(config.WEIGHTS_PATH))
+            a.assert_consumed()
+
+        #self.model.load_weights(config.WEIGHTS_PATH)
 
         # Init required for processing the mini-batches
         n_actors = self.environment.environment.num
@@ -41,6 +54,8 @@ class ModelTrainer:
         self.trajectory_buffer = TrajectoryBuffer(max_agent_steps=config.AGENT_HORIZON,
                                                   n_agents=n_actors,
                                                   obervation_shape=(64, 64, 3))
+
+
 
     def train(self):
 
@@ -117,12 +132,13 @@ class ModelTrainer:
                         "advantages": batch_advantages,
                         "returns": batch_returns
                     }
-                    kl_loss += self.model.train_step(**dict_args)
+                    # kl_loss += self.model.train_step(**dict_args)
+                    self.model.train_step(**dict_args)
 
-                kl_loss /= self.n_batches
-                if kl_loss > 1.5 * 0.01:
-                    print(f'Early stopping after {epoch} epochs during iteration number {iteration}')
-                    break
+                # kl_loss /= self.n_batches
+                # if kl_loss > 1.5 * 0.01:
+                #     print(f'Early stopping after {epoch} epochs during iteration number {iteration}')
+                #     break
 
             assert(trajectory.n_episodes == trajectory.n_loss + trajectory.n_incomplete + trajectory.n_wins)
             win_ratio = trajectory.n_wins / trajectory.n_episodes
@@ -131,6 +147,5 @@ class ModelTrainer:
                 f'Epoch: {iteration + 1} -  Win: {trajectory.n_wins} - Loss: {trajectory.n_loss} - incomplete: {trajectory.n_incomplete} - ratio: - winRatio: {win_ratio}'
             )
 
-        if config.SAVE_WEIGHTS:
-            self.model.save('weights/')
-
+            if config.SAVE_WEIGHTS and iteration % 10 == 0:
+                self.model_checkpoint.save(file_prefix=os.path.join(config.WEIGHTS_PATH, "ckpt"))

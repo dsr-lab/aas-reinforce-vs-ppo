@@ -1,3 +1,4 @@
+absl
 tensorflow
 numpy
 tqdm
