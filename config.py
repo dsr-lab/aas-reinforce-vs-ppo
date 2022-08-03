@@ -7,7 +7,7 @@ BATCH_SIZE = 64
 EPOCHS_MODEL_UPDATE = 15
 RANDOMIZE_SAMPLES = True
 AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
-BACKBONE_TYPE = 'impala'  # valid values ['impala', 'nature']
+BACKBONE_TYPE = 'nature'  # valid values ['impala', 'nature']
 SAVE_WEIGHTS = True
 
 print(f'GAME_NAME: {GAME_NAME}')
