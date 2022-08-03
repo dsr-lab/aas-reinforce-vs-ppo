@@ -7,7 +7,7 @@ BATCH_SIZE = 64
 EPOCHS_MODEL_UPDATE = 3
 RANDOMIZE_SAMPLES = True
 AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
-BACKBONE_TYPE = 'nature'  # valid values ['impala', 'nature']
+BACKBONE_TYPE = 'impala'  # valid values ['impala', 'nature']
 SAVE_WEIGHTS = True
 WEIGHTS_PATH = 'weights/'
 

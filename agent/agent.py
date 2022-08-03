@@ -26,8 +26,6 @@ class Agent(tf.keras.Model):
         self.optimizer.iterations  # Force the creation of the optimizer.iter variable
         self.optimizer.decay = tf.Variable(0.0)
 
-
-
         # Backbone
         if backbone_type == 'impala':
             self.feature_extractor = ImpalaNet()
