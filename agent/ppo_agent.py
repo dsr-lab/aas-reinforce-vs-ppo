@@ -6,8 +6,8 @@ from agent.agent import Agent
 
 class PPOAgent(Agent):
 
-    def __init__(self, n_actions, clip_ratio=0.2):
-        super(PPOAgent, self).__init__(n_actions=n_actions)
+    def __init__(self, n_actions, backbone_type, clip_ratio=0.2):
+        super(PPOAgent, self).__init__(n_actions=n_actions, backbone_type=backbone_type)
 
         self.clip_ratio = clip_ratio
 
@@ -36,6 +36,13 @@ class PPOAgent(Agent):
 
         policy_grads = tape.gradient(loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(policy_grads, self.trainable_variables))
+
+        actor_logits, _ = self(states)
+        kl = tf.reduce_mean(
+            action_probabilities / self._compute_probabilities(actor_logits, actions)
+        )
+        kl = tf.reduce_sum(kl)
+        return kl
 
     @staticmethod
     def _compute_probabilities(logits, actions):

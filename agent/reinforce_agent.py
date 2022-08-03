@@ -4,8 +4,8 @@ from agent.agent import Agent
 
 class ReinforceAgent(Agent):
 
-    def __init__(self, n_actions):
-        super(ReinforceAgent, self).__init__(n_actions=n_actions)
+    def __init__(self, n_actions, backbone_type):
+        super(ReinforceAgent, self).__init__(n_actions=n_actions, backbone_type=backbone_type)
 
     def train_step(self, states, returns):
 

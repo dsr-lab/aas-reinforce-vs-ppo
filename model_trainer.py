@@ -14,17 +14,20 @@ from environment.trajectory_buffer import TrajectoryBuffer
 
 class ModelTrainer:
 
-    def __init__(self, environment: EnvironmentWrapper, agent_type='ppo'):
+    def __init__(self,
+                 environment: EnvironmentWrapper):
 
         self.environment = environment
 
         # Init the model
         model_input = tf.keras.Input(shape=self.environment.get_state_shape())
 
-        if agent_type == 'ppo':
-            self.model = PPOAgent(n_actions=self.environment.get_n_actions())
+        if config.AGENT_TYPE == 'ppo':
+            self.model = PPOAgent(n_actions=self.environment.get_n_actions(),
+                                  backbone_type=config.BACKBONE_TYPE)
         else:
-            self.model = ReinforceAgent(n_actions=self.environment.get_n_actions())
+            self.model = ReinforceAgent(n_actions=self.environment.get_n_actions(),
+                                        backbone_type=config.BACKBONE_TYPE)
 
         self.model(model_input)
 
@@ -80,7 +83,9 @@ class ModelTrainer:
             returns = trajectory.returns
             advantages = trajectory.advantages
 
-            for _ in range(config.EPOCHS_MODEL_UPDATE):
+            for epoch in range(config.EPOCHS_MODEL_UPDATE):
+
+                kl_loss = 0
 
                 if config.RANDOMIZE_SAMPLES:
                     np.random.shuffle(self.time_step_indices)
@@ -112,9 +117,12 @@ class ModelTrainer:
                         "advantages": batch_advantages,
                         "returns": batch_returns
                     }
-                    self.model.train_step(**dict_args)
+                    kl_loss += self.model.train_step(**dict_args)
 
-            # TODO: save weights
+                kl_loss /= self.n_batches
+                if kl_loss > 1.5 * 0.01:
+                    print(f'Early stopping after {epoch} epochs during iteration number {iteration}')
+                    break
 
             assert(trajectory.n_episodes == trajectory.n_loss + trajectory.n_incomplete + trajectory.n_wins)
             win_ratio = trajectory.n_wins / trajectory.n_episodes
@@ -123,5 +131,6 @@ class ModelTrainer:
                 f'Epoch: {iteration + 1} -  Win: {trajectory.n_wins} - Loss: {trajectory.n_loss} - incomplete: {trajectory.n_incomplete} - ratio: - winRatio: {win_ratio}'
             )
 
-        self.model.save('weights/')
+        if config.SAVE_WEIGHTS:
+            self.model.save('weights/')
 
