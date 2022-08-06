@@ -40,8 +40,8 @@ class Episode:
 
            Typically, more time steps are considered, especially for reducing the bias. However, adding time steps
            could increase the variance.
-           In order to avoid this, the GAE paper demonstrated that doing a discounted sum of the advantages A(s,a) provides
-           the best results, with a lower variance.
+           In order to avoid this, the GAE paper demonstrated that doing a discounted sum of the advantages A(s,a)
+           provides the best results, with a lower variance.
 
            Thus:
                Aₜ(s,a) = Ʃ(γλ)ᵗ δₜ₊₁(s,a)
