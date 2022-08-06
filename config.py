@@ -18,7 +18,7 @@ WEIGHTS_PATH = 'weights/'
 """
 ENVIRONMENT SETTINGS
 """
-ENVIRONMENT_TYPE = NinjaEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
+ENVIRONMENT_TYPE = CoinrunEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
 RENDER_MODE = RenderMode.off
 SAVE_VIDEO = False
 
