@@ -8,12 +8,14 @@ class TrajectoryBuffer:
 
     def __init__(self,
                  max_agent_steps=1000,
+                 max_game_steps=1000,
                  n_agents=2,
                  obervation_shape=(64, 64, 3)):
 
         self.n_agents = n_agents
         self.obervation_shape = obervation_shape
         self.max_agent_steps = max_agent_steps
+        self.max_game_steps = max_game_steps
 
         self.states = None
         self.rewards = None
@@ -36,7 +38,7 @@ class TrajectoryBuffer:
         self.new_values[step] = new_value
         self.action_probabilities[step] = action_probability
 
-    def get(self):
+    def get_trajectory(self):
 
         self._penalize_game_fails()
 
@@ -44,7 +46,7 @@ class TrajectoryBuffer:
 
         self._split_in_episodes()
 
-        return Trajectory(self.episodes, max_episode_steps=self.max_agent_steps)
+        return Trajectory(self.episodes, max_game_steps=self.max_game_steps)
 
     def reset(self):
         self.states = np.zeros((self.max_agent_steps, self.n_agents,) + self.obervation_shape, dtype=np.float32)

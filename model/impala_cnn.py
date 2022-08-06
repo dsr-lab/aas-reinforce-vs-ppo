@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+
 class ImpalaNet(tf.keras.Model):
 
     def __init__(self, depths=[16, 32, 64]):

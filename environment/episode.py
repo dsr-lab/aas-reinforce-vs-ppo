@@ -14,7 +14,7 @@ class Episode:
         self.returns = None
         self.advantages = None
 
-    def compute_returns(self, normalize=False, gamma=0.99):
+    def compute_returns(self, normalize=False, gamma=0.999):
         self.returns = self._compute_discounted_cumulative_sum(self.rewards, gamma)
 
         if normalize:
@@ -25,7 +25,7 @@ class Episode:
 
             self.returns = (self.returns - returns_mean) / (returns_std + 1e-8)
 
-    def compute_advantages(self, normalize=False, gamma=0.99, lamda=0.97, v_t_next=0):
+    def compute_advantages(self, normalize=False, gamma=0.999, lamda=0.95, v_t_next=0):
         """
            Generalized Advantage Estimate (GAE): https://arxiv.org/abs/1506.02438
 

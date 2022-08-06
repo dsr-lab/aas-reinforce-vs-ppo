@@ -6,14 +6,14 @@ class Trajectory(Episode):
     """
     The trajectory object contains all the episodes gathered from the environmnent
     """
-    def __init__(self, episodes: [Episode], max_episode_steps=1000):
+    def __init__(self, episodes: [Episode], max_game_steps=1000):
         super().__init__()
 
         self.n_episodes = 0
         self.n_wins = 0
         self.n_loss = 0
         self.n_incomplete = 0
-        self.max_episode_steps = max_episode_steps
+        self.max_game_steps = max_game_steps
 
         self._flat_episodes(episodes)
 
@@ -38,7 +38,12 @@ class Trajectory(Episode):
             advantages.append(e.advantages)
             n_win += np.count_nonzero(e.rewards > 0)
             n_loss += np.count_nonzero(e.rewards < 0)
-            n_incomplete += 0 if e.rewards[-1] != 0 else 1
+
+            # Not considering those episodes that are truncated due to the max_episode_steps limit
+            n_incomplete += 1 if len(e.rewards) == self.max_game_steps else 0
+
+            # This would considers also episodes trucated due to max_episode_steps limit
+            # n_incomplete += 0 if e.rewards[-1] != 0 else 1
 
         assert \
             len(rewards) == len(states) == len(actions) == len(returns) == len(advantages) == len(action_probabilities)

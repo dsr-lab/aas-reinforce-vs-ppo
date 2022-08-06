@@ -37,12 +37,7 @@ class PPOAgent(Agent):
         policy_grads = tape.gradient(loss, self.trainable_variables)
         self.optimizer.apply_gradients(zip(policy_grads, self.trainable_variables))
 
-        actor_logits, _ = self(states)
-        # kl = tf.reduce_mean(
-        #     action_probabilities / self._compute_probabilities(actor_logits, actions)
-        # )
-        # kl = tf.reduce_sum(kl)
-        # return kl
+        return loss
 
     @staticmethod
     def _compute_probabilities(logits, actions):

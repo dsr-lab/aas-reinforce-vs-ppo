@@ -1,28 +1,23 @@
 import config
-from environment.env_wrapper import EnvironmentWrapper, RenderMode
 from model_trainer import ModelTrainer
-
-import random
-import numpy as np
-import tensorflow as tf
+from pathlib import Path
 
 
-def set_seeds():
-    random.seed(3105)
-    np.random.seed(3105)
-    tf.random.set_seed(3105)
+def create_required_directories():
+    Path(config.LOGS_PATH).mkdir(parents=True, exist_ok=True)
+    Path(config.WEIGHTS_PATH).mkdir(parents=True, exist_ok=True)
 
 
 def main():
-    set_seeds()
-    env = EnvironmentWrapper(num=config.N_AGENTS, env_name=config.GAME_NAME, render_mode=RenderMode.off)
+    create_required_directories()
+
+    env = config.ENVIRONMENT_TYPE(num=config.N_AGENTS,
+                                  render_mode=config.RENDER_MODE,
+                                  save_video=config.SAVE_VIDEO)
+
     model_trainer = ModelTrainer(environment=env)
     model_trainer.train()
 
 
 if __name__ == '__main__':
     main()
-
-
-
-
