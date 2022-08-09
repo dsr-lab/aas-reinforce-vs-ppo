@@ -1,4 +1,3 @@
-import config
 from model.agent import Agent
 from model.reinforce_agent import ReinforceAgent
 from environment.env_wrapper import EnvironmentWrapper
@@ -8,8 +7,14 @@ from trainer.trainer import Trainer
 
 class ReinforceTrainer(Trainer):
 
-    def __init__(self, environment: EnvironmentWrapper):
-        super(ReinforceTrainer, self).__init__(environment=environment)
+    def __init__(self,
+                 environment: EnvironmentWrapper,
+                 n_iterations=8000000,
+                 **trainer_args):
+        super(ReinforceTrainer, self).__init__(environment=environment,
+                                               **trainer_args)
+
+        self.n_iterations = n_iterations
 
     def init_agent(self, backbone_type) -> Agent:
         return ReinforceAgent(n_actions=self.environment.n_actions,
@@ -23,18 +28,19 @@ class ReinforceTrainer(Trainer):
                                 obervation_shape=(64, 64, 3),
                                 set_negative_rewards_for_losses=set_negative_rewards_for_losses)
 
-    def can_save_weights(self, iteration):
-        return config.SAVE_WEIGHTS and (iteration % 1000 == 0)
-
     def train(self):
         total_steps = 0
         n_episodes = 0
-        while total_steps < config.REINFORCE_ITERATIONS:
+        while total_steps < self.n_iterations:
             episode = self._create_episode()
 
             iteration_loss = self._update_model_weights(episode)
 
-            self.compute_post_iteration_operations(n_episodes, iteration_loss, episode)
+            self.log_iteration_results(n_episodes, iteration_loss, episode)
+
+            # TODO....
+            if n_episodes % 1000 == 0:
+                self.save_model_weights()
 
             total_steps += episode.n_steps()
             n_episodes += 1

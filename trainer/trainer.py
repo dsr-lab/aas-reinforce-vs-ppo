@@ -1,5 +1,4 @@
 import os
-import config
 import logging
 import numpy as np
 import tensorflow as tf
@@ -15,27 +14,37 @@ from environment.trajectory_buffer import TrajectoryBuffer
 class Trainer:
 
     def __init__(self,
-                 environment: EnvironmentWrapper):
+                 environment: EnvironmentWrapper,
+                 use_negative_rewards_for_losses=True,
+                 backbone_type='impala',
+                 weights_path='',
+                 save_logs=True,
+                 logs_path='',
+                 save_weights=True,
+                 ):
         self.environment = environment
-        self.trajectory_buffer = self.init_trajectory_buffer(config.NEGATIVE_REWARDS_FOR_LOSSES)
+        self.save_logs = save_logs
+        self.save_weights = save_weights
+        self.weights_path = weights_path
+        self.trajectory_buffer = self.init_trajectory_buffer(use_negative_rewards_for_losses)
 
         # Init the model
         model_input = tf.keras.Input(shape=self.environment.get_state_shape())
-        self.model = self.init_agent(config.BACKBONE_TYPE)
+        self.model = self.init_agent(backbone_type)
         self.model(model_input)
 
         # Set model checkpoints
         self.model_checkpoint = tf.train.Checkpoint(optimizer=self.model.optimizer, model=self.model)
 
         # Possibly load model weights
-        last_checkpoint = tf.train.latest_checkpoint(config.WEIGHTS_PATH)
+        last_checkpoint = tf.train.latest_checkpoint(self.weights_path)
         if last_checkpoint is not None:
             checkpoint_restored = self.model_checkpoint.restore(last_checkpoint)
             checkpoint_restored.assert_consumed()
 
         # Init logger
-        if config.SAVE_LOGS:
-            logging.basicConfig(filename=f'logs/log_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt',
+        if self.save_logs:
+            logging.basicConfig(filename=f'{logs_path}log_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt',
                                 filemode='a',
                                 format='%(message)s',
                                 level=logging.INFO)
@@ -52,22 +61,11 @@ class Trainer:
     def train(self):
         pass
 
-    @abstractmethod
-    def can_save_weights(self, **kwargs):
-        pass
-
     @staticmethod
     def normalize(x):
         return (x - np.mean(x)) / (np.std(x) + 1e-8)
 
-    def compute_post_iteration_operations(self, iteration, iteration_loss, trajectory: FlattenedTrajectory):
-
-        self._log_iteration_results(iteration, iteration_loss, trajectory)
-
-        self._save_model_weights(iteration)
-
-    @staticmethod
-    def _log_iteration_results(iteration, iteration_loss, trajectory):
+    def log_iteration_results(self, iteration, iteration_loss, trajectory):
         win_ratio = trajectory.n_wins / (trajectory.n_loss + trajectory.n_incomplete + trajectory.n_wins)
         print(
             f'Epoch: {iteration + 1} -  '
@@ -77,7 +75,7 @@ class Trainer:
             f'Ratio: - winRatio: {win_ratio}'
         )
 
-        if config.SAVE_LOGS:
+        if self.save_logs:
             dict_log = {
                 f'ITERATION_{iteration}': {
                     "actions": trajectory.actions.tolist(),
@@ -93,6 +91,6 @@ class Trainer:
 
             logging.info(f'{dict_log}')
 
-    def _save_model_weights(self, iteration):
-        if self.can_save_weights(iteration):
-            self.model_checkpoint.save(file_prefix=os.path.join(config.WEIGHTS_PATH, "ckpt"))
+    def save_model_weights(self):
+        if self.save_weights:
+            self.model_checkpoint.save(file_prefix=os.path.join(self.weights_path, "ckpt"))

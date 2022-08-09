@@ -1,4 +1,3 @@
-import config
 import numpy as np
 
 from model.agent import Agent
@@ -10,12 +9,30 @@ from trainer.trainer import Trainer
 
 class PPOTrainer(Trainer):
 
-    def __init__(self, environment: EnvironmentWrapper):
-        super(PPOTrainer, self).__init__(environment=environment)
+    def __init__(self,
+                 environment: EnvironmentWrapper,
+                 n_agents=32,
+                 n_iterations=256,
+                 agent_horizon=1024,
+                 batch_size=256,
+                 epochs_model_update=3,
+                 randomize_samples=True,
+                 **trainer_args):
+
+        self.agent_horizon = agent_horizon
+
+        super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
+
+        self.epochs_model_update = epochs_model_update
+        self.randomize_samples = randomize_samples
+        self.batch_size = batch_size
+
+        self.n_iterations = n_iterations
+        self.n_agents = n_agents
 
         # Init variables required for processing the mini-batches
-        total_time_steps = config.PPO_N_AGENTS * config.PPO_AGENT_HORIZON
-        self.n_batches = total_time_steps // config.PPO_BATCH_SIZE
+        total_time_steps = n_agents * agent_horizon
+        self.n_batches = total_time_steps // batch_size
         self.time_step_indices = np.arange(total_time_steps)
 
     def init_agent(self, backbone_type) -> Agent:
@@ -24,31 +41,31 @@ class PPOTrainer(Trainer):
 
     def init_trajectory_buffer(self, set_negative_rewards_for_losses) -> TrajectoryBuffer:
         # Init the buffer
-        return TrajectoryBuffer(max_agent_steps=config.PPO_AGENT_HORIZON,
+        return TrajectoryBuffer(max_agent_steps=self.agent_horizon,
                                 max_game_steps=self.environment.get_max_game_steps(),
-                                n_agents=config.PPO_N_AGENTS,
+                                n_agents=self.n_agents,
                                 obervation_shape=(64, 64, 3),
                                 set_negative_rewards_for_losses=set_negative_rewards_for_losses)
 
-    def can_save_weights(self, iteration):
-        return config.SAVE_WEIGHTS and (iteration % 10 == 0 or iteration == config.PPO_ITERATIONS - 1)
-
     def train(self):
 
-        for iteration in range(config.PPO_ITERATIONS):
+        for iteration in range(self.n_iterations):
 
             trajectory = self._create_trajectory()
 
             iteration_loss = self._update_model_weights(trajectory)
 
-            self.compute_post_iteration_operations(iteration, iteration_loss, trajectory)
+            self.log_iteration_results(iteration, iteration_loss, trajectory)
+
+            if iteration % 10 == 0 or iteration == self.n_iterations - 1:
+                self.save_model_weights()
 
     def _create_trajectory(self):
         # Init trajectory
         self.trajectory_buffer.reset()
         # Reset the environment
         state, first = self.environment.reset()
-        for time_step in range(config.PPO_AGENT_HORIZON):
+        for time_step in range(self.agent_horizon):
 
             # Select an action
             action, action_probability = self.model.get_action(state)
@@ -61,7 +78,7 @@ class PPOTrainer(Trainer):
 
             # Gather the next value that is afterward used for GAE computation
             new_value = 0
-            if time_step == config.PPO_AGENT_HORIZON - 1:
+            if time_step == self.agent_horizon - 1:
                 new_value = self.model.get_value(new_state)
 
             # Add element to the current trajectory
@@ -83,13 +100,13 @@ class PPOTrainer(Trainer):
 
     def _update_model_weights(self, trajectory):
         iteration_loss = 0
-        for epoch in range(config.PPO_EPOCHS_MODEL_UPDATE):
+        for epoch in range(self.epochs_model_update):
 
-            if config.PPO_RANDOMIZE_SAMPLES:
+            if self.randomize_samples:
                 np.random.shuffle(self.time_step_indices)
 
-            for start in range(0, self.n_batches, config.PPO_BATCH_SIZE):
-                end = start + config.PPO_BATCH_SIZE
+            for start in range(0, self.n_batches, self.batch_size):
+                end = start + self.batch_size
                 interval = self.time_step_indices[start:end]
 
                 dict_args = {
@@ -103,6 +120,6 @@ class PPOTrainer(Trainer):
 
                 iteration_loss += self.model.train_step(**dict_args)
 
-        iteration_loss /= (self.n_batches * config.PPO_EPOCHS_MODEL_UPDATE)
+        iteration_loss /= (self.n_batches * self.epochs_model_update)
 
         return iteration_loss

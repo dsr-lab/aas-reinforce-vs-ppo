@@ -14,17 +14,17 @@ def main():
     create_required_directories()
 
     if config.AGENT_TYPE == 'ppo':
-        env = config.ENVIRONMENT_TYPE(num=config.PPO_N_AGENTS,
-                                      render_mode=config.RENDER_MODE,
-                                      save_video=config.SAVE_VIDEO)
+        env = config.ENVIRONMENT_TYPE(**config.ppo_environment_config)
 
-        trainer = PPOTrainer(environment=env)
+        trainer = PPOTrainer(environment=env,
+                             **config.ppo_trainer_config,
+                             **config.trainer_common_config)
     else:
-        env = config.ENVIRONMENT_TYPE(num=1,
-                                      render_mode=config.RENDER_MODE,
-                                      save_video=config.SAVE_VIDEO)
+        env = config.ENVIRONMENT_TYPE(**config.reinforce_environment_config)
 
-        trainer = ReinforceTrainer(environment=env)
+        trainer = ReinforceTrainer(environment=env,
+                                   **config.reinforce_trainer_config,
+                                   **config.trainer_common_config)
 
     trainer.train()
 

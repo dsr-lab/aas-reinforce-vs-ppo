@@ -4,7 +4,8 @@ import numpy as np
 
 class FlattenedTrajectory(Episode):
     """
-    The FlattenedTrajectory object contains all the episodes gathered from the environmnent
+    The FlattenedTrajectory object contains all the episodes gathered from the environmnent.
+    It is basically
     """
     def __init__(self, episodes: [Episode], max_game_steps=1000):
         super().__init__()
