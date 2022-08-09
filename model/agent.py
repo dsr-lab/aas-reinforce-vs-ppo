@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow as tf
 from abc import abstractmethod
 
@@ -33,6 +32,7 @@ class Agent(tf.keras.Model):
         else:
             self.feature_extractor = NatureNet()
 
+        # TODO: comments on initialization!
         # Model heads
         self.critic = Head(n_outputs=1, kernel_initializer=tf.keras.initializers.Orthogonal(gain=1))
         self.actor = Head(n_outputs=n_actions, kernel_initializer=tf.keras.initializers.Orthogonal(gain=0.01))

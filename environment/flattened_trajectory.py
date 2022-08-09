@@ -2,9 +2,9 @@ from environment.episode import Episode
 import numpy as np
 
 
-class Trajectory(Episode):
+class FlattenedTrajectory(Episode):
     """
-    The trajectory object contains all the episodes gathered from the environmnent
+    The FlattenedTrajectory object contains all the episodes gathered from the environmnent
     """
     def __init__(self, episodes: [Episode], max_game_steps=1000):
         super().__init__()
@@ -19,11 +19,13 @@ class Trajectory(Episode):
 
     def _flat_episodes(self, episodes: [Episode]):
         rewards = []
+        true_rewards = []
         states = []
         actions = []
         action_probabilities = []
         returns = []
         advantages = []
+        values = []
 
         n_win = 0
         n_loss = 0
@@ -31,11 +33,14 @@ class Trajectory(Episode):
 
         for e in episodes:
             rewards.append(e.rewards)
+            true_rewards.append(e.true_rewards)
             states.append(e.states)
             actions.append(e.actions)
             action_probabilities.append(e.action_probabilities)
             returns.append(e.returns)
             advantages.append(e.advantages)
+            values.append(e.values)
+
             n_win += np.count_nonzero(e.rewards > 0)
             n_loss += np.count_nonzero(e.rewards < 0)
 
@@ -45,15 +50,18 @@ class Trajectory(Episode):
             # This would considers also episodes trucated due to max_episode_steps limit
             # n_incomplete += 0 if e.rewards[-1] != 0 else 1
 
+        # Sanity check
         assert \
             len(rewards) == len(states) == len(actions) == len(returns) == len(advantages) == len(action_probabilities)
 
         self.rewards = np.concatenate(rewards)
+        self.true_rewards = np.concatenate(true_rewards)
         self.states = np.concatenate(states)
         self.actions = np.concatenate(actions)
         self.returns = np.concatenate(returns)
         self.advantages = np.concatenate(advantages)
         self.action_probabilities = np.concatenate(action_probabilities)
+        self.values = np.concatenate(values)
 
         self.n_episodes = len(episodes)
         self.n_wins = n_win

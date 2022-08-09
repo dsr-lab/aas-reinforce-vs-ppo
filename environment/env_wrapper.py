@@ -37,7 +37,7 @@ class EnvironmentWrapper:
         if model_output_to_actions is None:
             print(f'Using all the {self.n_actions} available actions.')
         else:
-            print(f'Using {self.n_actions}, which is a subset of the available actions.')
+            print(f'Using {self.n_actions} actions, which is a subset of the available actions.')
 
 
 
@@ -135,12 +135,12 @@ class NinjaEnvironment(EnvironmentWrapper):
 
 class LeaperEnvironment(EnvironmentWrapper):
     def __init__(self, num, render_mode: RenderMode, save_video):
-        # model_output_to_actions = {
-        #     0: 1,  # LEFT
-        #     1: 4,  # NONE
-        #     2: 5,  # UP
-        #     3: 7   # RIGHT
-        # }
+        model_output_to_actions = {
+            0: 1,  # LEFT
+            1: 4,  # NONE
+            2: 5,  # UP
+            3: 7   # RIGHT
+        }
 
         super(LeaperEnvironment, self).__init__(num=num,
                                                 env_name='leaper',

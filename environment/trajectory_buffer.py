@@ -1,7 +1,7 @@
 import numpy as np
 
 from environment.episode import Episode
-from environment.trajectory import Trajectory
+from environment.flattened_trajectory import FlattenedTrajectory
 
 
 class TrajectoryBuffer:
@@ -19,6 +19,7 @@ class TrajectoryBuffer:
 
         self.states = None
         self.rewards = None
+        self.true_rewards = None
         self.firsts = None
         self.actions = None
         self.action_probabilities = None
@@ -32,13 +33,14 @@ class TrajectoryBuffer:
 
         self.states[step] = state
         self.rewards[step] = reward
+        self.true_rewards[step] = reward
         self.firsts[step] = first
         self.actions[step] = action
         self.values[step] = value
         self.new_values[step] = new_value
         self.action_probabilities[step] = action_probability
 
-    def get_trajectory(self):
+    def get_trajectory(self, flattened=True):
 
         self._penalize_game_fails()
 
@@ -46,11 +48,15 @@ class TrajectoryBuffer:
 
         self._split_in_episodes()
 
-        return Trajectory(self.episodes, max_game_steps=self.max_game_steps)
+        if flattened:
+            return FlattenedTrajectory(self.episodes, max_game_steps=self.max_game_steps)
+        else:
+            return self.episodes
 
     def reset(self):
         self.states = np.zeros((self.max_agent_steps, self.n_agents,) + self.obervation_shape, dtype=np.float32)
         self.rewards = np.zeros((self.max_agent_steps, self.n_agents,), dtype=np.float32)
+        self.true_rewards = np.zeros((self.max_agent_steps, self.n_agents,), dtype=np.float32)
         self.firsts = np.zeros((self.max_agent_steps, self.n_agents,), dtype=np.bool_)
         self.actions = np.zeros((self.max_agent_steps, self.n_agents,), dtype=np.int32)
         self.action_probabilities = np.zeros((self.max_agent_steps, self.n_agents,), dtype=np.float32)
@@ -59,7 +65,7 @@ class TrajectoryBuffer:
 
         self.episodes = []
 
-    def _penalize_game_fails(self):
+    def _penalize_game_fails(self, update_true_rewards=False):
         """
         This method is necessary to penalize the losses, because the environment always returns a 0-reward also
         in case of a loss.
@@ -95,6 +101,9 @@ class TrajectoryBuffer:
         shifted_first = np.append(shifted_first, [[False]*self.n_agents], axis=0)
         
         self.rewards[shifted_first & (self.rewards <= 0)] = -1
+
+        if update_true_rewards:
+            self.true_rewards[shifted_first & (self.true_rewards <= 0)] = -1
 
     def _force_at_least_one_episode_per_agent(self):
         """
@@ -145,6 +154,7 @@ class TrajectoryBuffer:
         episode = Episode()
 
         episode.rewards = self.rewards[row_start:row_end, col]
+        episode.true_rewards = self.true_rewards[row_start:row_end, col]
         episode.states = self.states[row_start:row_end, col]
         episode.actions = self.actions[row_start:row_end, col]
         episode.action_probabilities = self.action_probabilities[row_start:row_end, col]
@@ -158,11 +168,3 @@ class TrajectoryBuffer:
         episode.compute_returns()
 
         return episode
-
-
-
-
-
-
-
-

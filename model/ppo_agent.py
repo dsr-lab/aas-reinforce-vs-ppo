@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-from agent.agent import Agent
+from model.agent import Agent
 
 
 class PPOAgent(Agent):
@@ -11,9 +11,9 @@ class PPOAgent(Agent):
 
         self.clip_ratio = clip_ratio
 
-    def train_step(self, states, actions, action_probabilities, advantages, returns):
+    def train_step(self, states, actions, action_probabilities, advantages, returns, old_values):
         with tf.GradientTape() as tape:
-            actor_logits, value = self(states)
+            actor_logits, values = self(states)
 
             actions = tf.expand_dims(actions, axis=-1)
             ratio = self._compute_probabilities(actor_logits, actions) / action_probabilities
@@ -28,7 +28,12 @@ class PPOAgent(Agent):
                 tf.minimum(ratio * advantages, min_advantage)
             )
 
-            critic_loss = 0.5 * tf.reduce_mean((returns - value) ** 2)
+            values_clipped = old_values + tf.clip_by_value(values - old_values,
+                                                           - self.clip_ratio, self.clip_ratio)
+            critic_loss_clipped = tf.maximum(tf.square(values - returns),
+                                             tf.square(values_clipped - returns))
+            critic_loss = 0.5 * tf.reduce_mean(critic_loss_clipped)
+            # critic_loss = 0.5 * tf.reduce_mean((returns - values) ** 2)
 
             entropy_loss = self.compute_entropy(actor_logits) * 0.01
 
@@ -38,13 +43,6 @@ class PPOAgent(Agent):
         self.optimizer.apply_gradients(zip(policy_grads, self.trainable_variables))
 
         return loss
-
-    @staticmethod
-    def _compute_probabilities(logits, actions):
-        action_distribution = tf.nn.softmax(logits)
-        probabilities = tf.gather_nd(action_distribution, actions, batch_dims=actions.shape[1])
-
-        return probabilities
 
     @staticmethod
     def compute_entropy(distribution):

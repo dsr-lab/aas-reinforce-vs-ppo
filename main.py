@@ -1,6 +1,8 @@
 import config
-from model_trainer import ModelTrainer
 from pathlib import Path
+
+from trainer.ppo_trainer import PPOTrainer
+from trainer.reinforce_trainer import ReinforceTrainer
 
 
 def create_required_directories():
@@ -11,12 +13,20 @@ def create_required_directories():
 def main():
     create_required_directories()
 
-    env = config.ENVIRONMENT_TYPE(num=config.N_AGENTS,
-                                  render_mode=config.RENDER_MODE,
-                                  save_video=config.SAVE_VIDEO)
+    if config.AGENT_TYPE == 'ppo':
+        env = config.ENVIRONMENT_TYPE(num=config.PPO_N_AGENTS,
+                                      render_mode=config.RENDER_MODE,
+                                      save_video=config.SAVE_VIDEO)
 
-    model_trainer = ModelTrainer(environment=env)
-    model_trainer.train()
+        trainer = PPOTrainer(environment=env)
+    else:
+        env = config.ENVIRONMENT_TYPE(num=1,
+                                      render_mode=config.RENDER_MODE,
+                                      save_video=config.SAVE_VIDEO)
+
+        trainer = ReinforceTrainer(environment=env)
+
+    trainer.train()
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ class Episode:
 
         self.states = None
         self.rewards = None
+        self.true_rewards = None
         self.actions = None
 
         self.values = None
@@ -14,8 +15,11 @@ class Episode:
         self.returns = None
         self.advantages = None
 
+    def n_steps(self):
+        return len(self.actions) if self.actions is not None else 0
+
     def compute_returns(self, normalize=False, gamma=0.99):
-        self.returns = self._compute_discounted_cumulative_sum(self.rewards, gamma)
+        self.returns = self._compute_discounted_cumulative_sum(self.true_rewards, gamma)
 
         if normalize:
             returns_mean, returns_std = (
@@ -46,12 +50,12 @@ class Episode:
            Thus:
                Aₜ(s,a) = Ʃ(γλ)ᵗ δₜ₊₁(s,a)
            """
-        self.advantages = np.zeros((len(self.rewards)), dtype=np.float32)
+        self.advantages = np.zeros((len(self.true_rewards)), dtype=np.float32)
         adv_t_prev = 0
 
         for t in range(len(self.advantages)-1, -1, -1):
 
-            r_t = self.rewards[t]
+            r_t = self.true_rewards[t]
             v_t = self.values[t]
 
             delta = r_t + gamma * v_t_next - v_t
