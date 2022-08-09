@@ -17,7 +17,7 @@ class Trainer:
     def __init__(self,
                  environment: EnvironmentWrapper):
         self.environment = environment
-        self.trajectory_buffer = self.init_trajectory_buffer()
+        self.trajectory_buffer = self.init_trajectory_buffer(config.NEGATIVE_REWARDS_FOR_LOSSES)
 
         # Init the model
         model_input = tf.keras.Input(shape=self.environment.get_state_shape())
@@ -45,7 +45,7 @@ class Trainer:
         pass
 
     @abstractmethod
-    def init_trajectory_buffer(self) -> TrajectoryBuffer:
+    def init_trajectory_buffer(self, set_negative_rewards_for_losses) -> TrajectoryBuffer:
         pass
 
     @abstractmethod

@@ -15,12 +15,13 @@ class ReinforceTrainer(Trainer):
         return ReinforceAgent(n_actions=self.environment.n_actions,
                               backbone_type=backbone_type)
 
-    def init_trajectory_buffer(self) -> TrajectoryBuffer:
+    def init_trajectory_buffer(self, set_negative_rewards_for_losses) -> TrajectoryBuffer:
         # Init the buffer
         return TrajectoryBuffer(max_agent_steps=self.environment.get_max_game_steps(),
                                 max_game_steps=self.environment.get_max_game_steps(),
                                 n_agents=1,
-                                obervation_shape=(64, 64, 3))
+                                obervation_shape=(64, 64, 3),
+                                set_negative_rewards_for_losses=set_negative_rewards_for_losses)
 
     def can_save_weights(self, iteration):
         return config.SAVE_WEIGHTS and (iteration % 1000 == 0)

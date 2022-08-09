@@ -10,8 +10,10 @@ class TrajectoryBuffer:
                  max_agent_steps=1000,
                  max_game_steps=1000,
                  n_agents=2,
-                 obervation_shape=(64, 64, 3)):
+                 obervation_shape=(64, 64, 3),
+                 set_negative_rewards_for_losses=False):
 
+        self.set_negative_rewards_for_losses = set_negative_rewards_for_losses
         self.n_agents = n_agents
         self.obervation_shape = obervation_shape
         self.max_agent_steps = max_agent_steps
@@ -42,7 +44,7 @@ class TrajectoryBuffer:
 
     def get_trajectory(self, flattened=True):
 
-        self._penalize_game_fails()
+        self._penalize_game_fails(update_also_true_rewards=self.set_negative_rewards_for_losses)
 
         self._force_at_least_one_episode_per_agent()
 
@@ -65,7 +67,7 @@ class TrajectoryBuffer:
 
         self.episodes = []
 
-    def _penalize_game_fails(self, update_true_rewards=False):
+    def _penalize_game_fails(self, update_also_true_rewards=False):
         """
         This method is necessary to penalize the losses, because the environment always returns a 0-reward also
         in case of a loss.
@@ -98,11 +100,11 @@ class TrajectoryBuffer:
 
         """
         shifted_first = self.firsts[1:, :]
-        shifted_first = np.append(shifted_first, [[False]*self.n_agents], axis=0)
-        
+        shifted_first = np.append(shifted_first, [[False] * self.n_agents], axis=0)
+
         self.rewards[shifted_first & (self.rewards <= 0)] = -1
 
-        if update_true_rewards:
+        if update_also_true_rewards:
             self.true_rewards[shifted_first & (self.true_rewards <= 0)] = -1
 
     def _force_at_least_one_episode_per_agent(self):
@@ -130,7 +132,7 @@ class TrajectoryBuffer:
                 continue
 
             # Set indices
-            time_step_end = time_steps[i+1]
+            time_step_end = time_steps[i + 1]
 
             # Create the episode
             self.episodes.append(self._create_episode(time_step_start, time_step_end, agent))
@@ -144,7 +146,7 @@ class TrajectoryBuffer:
 
     @staticmethod
     def _is_next_agent_different(i, agent, agents):
-        return i != len(agents)-1 and agent != agents[i+1]
+        return i != len(agents) - 1 and agent != agents[i + 1]
 
     def _complete_agent_timesteps(self, row_start, col):
         if row_start < self.max_agent_steps:
