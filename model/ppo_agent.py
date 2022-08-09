@@ -27,13 +27,14 @@ class PPOAgent(Agent):
             actor_loss = -tf.reduce_mean(
                 tf.minimum(ratio * advantages, min_advantage)
             )
-
+            """    
             values_clipped = old_values + tf.clip_by_value(values - old_values,
                                                            - self.clip_ratio, self.clip_ratio)
             critic_loss_clipped = tf.maximum(tf.square(values - returns),
                                              tf.square(values_clipped - returns))
             critic_loss = 0.5 * tf.reduce_mean(critic_loss_clipped)
-            # critic_loss = 0.5 * tf.reduce_mean((returns - values) ** 2)
+            """
+            critic_loss = 0.5 * tf.reduce_mean((returns - values) ** 2)
 
             entropy_loss = self.compute_entropy(actor_logits) * 0.01
 

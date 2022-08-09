@@ -1,7 +1,7 @@
 from environment.env_wrapper import RenderMode, NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
 
 AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
-ENVIRONMENT_TYPE = LeaperEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
+ENVIRONMENT_TYPE = NinjaEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
 
 
 """""""""""""""""""""""""""""""""""""""""
