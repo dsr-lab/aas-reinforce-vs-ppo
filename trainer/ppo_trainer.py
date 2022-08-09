@@ -20,6 +20,7 @@ class PPOTrainer(Trainer):
                  **trainer_args):
 
         self.agent_horizon = agent_horizon
+        self.n_agents = n_agents
 
         super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
 
@@ -28,7 +29,7 @@ class PPOTrainer(Trainer):
         self.batch_size = batch_size
 
         self.n_iterations = n_iterations
-        self.n_agents = n_agents
+
 
         # Init variables required for processing the mini-batches
         total_time_steps = n_agents * agent_horizon
