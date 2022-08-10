@@ -6,10 +6,15 @@ from model.agent import Agent
 
 class PPOAgent(Agent):
 
-    def __init__(self, n_actions, backbone_type, clip_ratio=0.2):
+    def __init__(self,
+                 n_actions,
+                 backbone_type,
+                 clip_ratio=0.2,
+                 clip_value_estimates=False):
         super(PPOAgent, self).__init__(n_actions=n_actions, backbone_type=backbone_type)
 
         self.clip_ratio = clip_ratio
+        self.clip_value_estimates = clip_value_estimates
 
     def train_step(self, states, actions, action_probabilities, advantages, returns, old_values):
         with tf.GradientTape() as tape:
@@ -27,14 +32,13 @@ class PPOAgent(Agent):
             actor_loss = -tf.reduce_mean(
                 tf.minimum(ratio * advantages, min_advantage)
             )
-            """    
-            values_clipped = old_values + tf.clip_by_value(values - old_values,
-                                                           - self.clip_ratio, self.clip_ratio)
-            critic_loss_clipped = tf.maximum(tf.square(values - returns),
-                                             tf.square(values_clipped - returns))
-            critic_loss = 0.5 * tf.reduce_mean(critic_loss_clipped)
-            """
-            critic_loss = 0.5 * tf.reduce_mean((returns - values) ** 2)
+
+            if self.clip_value_estimates:
+                values_clipped = old_values + tf.clip_by_value(values - old_values, - self.clip_ratio, self.clip_ratio)
+                critic_loss_clipped = tf.maximum(tf.square(values - returns), tf.square(values_clipped - returns))
+                critic_loss = 0.5 * tf.reduce_mean(critic_loss_clipped)
+            else:
+                critic_loss = 0.5 * tf.reduce_mean((returns - values) ** 2)
 
             entropy_loss = self.compute_entropy(actor_logits) * 0.01
 

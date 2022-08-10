@@ -17,19 +17,22 @@ class PPOTrainer(Trainer):
                  batch_size=256,
                  epochs_model_update=3,
                  randomize_samples=True,
+                 clip_ratio=0.2,
+                 clip_value_estimates=False,
+                 normalize_advantages=False,
                  **trainer_args):
 
-        self.agent_horizon = agent_horizon
         self.n_agents = n_agents
-
-        super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
-
+        self.clip_ratio = clip_ratio
+        self.agent_horizon = agent_horizon
         self.epochs_model_update = epochs_model_update
         self.randomize_samples = randomize_samples
         self.batch_size = batch_size
-
         self.n_iterations = n_iterations
+        self.normalize_advantages = normalize_advantages
+        self.clip_value_estimates = clip_value_estimates
 
+        super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
 
         # Init variables required for processing the mini-batches
         total_time_steps = n_agents * agent_horizon
@@ -38,14 +41,16 @@ class PPOTrainer(Trainer):
 
     def init_agent(self, backbone_type) -> Agent:
         return PPOAgent(n_actions=self.environment.n_actions,
-                        backbone_type=backbone_type)
+                        backbone_type=backbone_type,
+                        clip_ratio=self.clip_ratio,
+                        clip_value_estimates=self.clip_value_estimates)
 
     def init_trajectory_buffer(self, set_negative_rewards_for_losses) -> TrajectoryBuffer:
         # Init the buffer
         return TrajectoryBuffer(max_agent_steps=self.agent_horizon,
                                 max_game_steps=self.environment.get_max_game_steps(),
                                 n_agents=self.n_agents,
-                                obervation_shape=(64, 64, 3),
+                                obervation_shape=(64, 64, 3),  # TODO: parametrize
                                 set_negative_rewards_for_losses=set_negative_rewards_for_losses)
 
     def train(self):
@@ -113,8 +118,9 @@ class PPOTrainer(Trainer):
                 dict_args = {
                     "states": trajectory.states[interval],
                     "actions": trajectory.actions[interval],
-                    "action_probabilities": trajectory.action_probabilities[interval],
-                    # "advantages": self.normalize(trajectory.advantages[interval]),
+                    "action_probabilities":
+                        self.normalize(trajectory.advantages[interval]) if self.normalize_advantages
+                        else trajectory.action_probabilities[interval],
                     "advantages": trajectory.advantages[interval],
                     "returns": trajectory.returns[interval],
                     "old_values": trajectory.values[interval]
