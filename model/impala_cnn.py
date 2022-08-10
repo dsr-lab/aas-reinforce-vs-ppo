@@ -3,7 +3,7 @@ import tensorflow as tf
 
 class ImpalaNet(tf.keras.Model):
 
-    def __init__(self, depths=[16, 32, 64]):
+    def __init__(self, depths=[16, 32, 32]):
 
         super(ImpalaNet, self).__init__()
 
@@ -11,7 +11,7 @@ class ImpalaNet(tf.keras.Model):
             [ConvolutionalBlock(depth) for depth in depths]
 
         self.flatten = tf.keras.layers.Flatten()
-        self.dense = tf.keras.layers.Dense(512, activation='relu')
+        self.dense = tf.keras.layers.Dense(256, activation='relu')
 
     def call(self, x):
         output = x
