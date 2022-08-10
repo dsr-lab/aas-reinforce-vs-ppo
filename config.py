@@ -1,7 +1,7 @@
 from environment.env_wrapper import RenderMode, NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
 
 AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
-ENVIRONMENT_TYPE = NinjaEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
+ENVIRONMENT_TYPE = LeaperEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
 
 
 """""""""""""""""""""""""""""""""""""""""
@@ -30,7 +30,7 @@ PPO_N_AGENTS = 32
 
 ppo_trainer_config = {
     'n_agents': PPO_N_AGENTS,
-    'n_iterations': 256,
+    'n_iterations': 256*3,
     'agent_horizon': 1024,
     'batch_size': 256,
     'epochs_model_update': 12,
