@@ -36,8 +36,8 @@ ppo_trainer_config = {
     'epochs_model_update': 12,
     'randomize_samples': True,
     'clip_ratio': 0.2,
-    'normalize_advantages': True,
-    'clip_value_estimates': True
+    'normalize_advantages': False,
+    'clip_value_estimates': False
 }
 
 ppo_environment_config = {
