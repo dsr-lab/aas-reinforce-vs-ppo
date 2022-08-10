@@ -10,7 +10,7 @@ COMMON SETTINGS
 WEIGHTS_PATH = 'weights/'
 LOGS_PATH = 'logs/'
 trainer_common_config = {
-    'use_negative_rewards_for_losses': True,
+    'use_negative_rewards_for_losses': False,
     'backbone_type': 'impala',  # valid values ['impala', 'nature']
     'save_weights': True,
     'weights_path': WEIGHTS_PATH,   # TODO: fix logs with os.append
