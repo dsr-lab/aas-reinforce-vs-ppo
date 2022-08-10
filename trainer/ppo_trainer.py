@@ -114,8 +114,8 @@ class PPOTrainer(Trainer):
                     "states": trajectory.states[interval],
                     "actions": trajectory.actions[interval],
                     "action_probabilities": trajectory.action_probabilities[interval],
-                    "advantages": self.normalize(trajectory.advantages[interval]),
-                    # "advantages": trajectory.advantages[interval],
+                    # "advantages": self.normalize(trajectory.advantages[interval]),
+                    "advantages": trajectory.advantages[interval],
                     "returns": trajectory.returns[interval],
                     "old_values": trajectory.values[interval]
                 }
