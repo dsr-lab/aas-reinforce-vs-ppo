@@ -42,7 +42,7 @@ class Agent(tf.keras.Model):
     def train_step(self, **kwargs):
         pass
 
-    #@tf.function
+    @tf.function
     def call(self, states):
         output = states
 
@@ -55,12 +55,12 @@ class Agent(tf.keras.Model):
 
         return actor_logits, value
 
-    #@tf.function
+    @tf.function
     def get_value(self, state):
-       _, value = self(state)
-       return value
+        _, value = self(state)
+        return value
 
-    #@tf.function
+    @tf.function
     def get_action(self, state):
         action_logits, _ = self(state)
 

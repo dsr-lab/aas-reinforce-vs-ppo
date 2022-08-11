@@ -16,7 +16,7 @@ class PPOAgent(Agent):
         self.clip_ratio = clip_ratio
         self.clip_value_estimates = clip_value_estimates
 
-    # @tf.function
+    @tf.function
     def train_step(self, states, actions, action_probabilities, advantages, returns, old_values):
         with tf.GradientTape() as tape:
             actor_logits, values = self(states)
