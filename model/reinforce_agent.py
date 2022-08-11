@@ -9,7 +9,7 @@ class ReinforceAgent(Agent):
 
         self.critic.trainable = False
 
-    @tf.function
+    #@tf.function
     def train_step(self, states, action_probabilities, actions, returns):
 
         # 1) Get action_logits
