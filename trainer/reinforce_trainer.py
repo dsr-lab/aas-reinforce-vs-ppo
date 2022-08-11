@@ -111,7 +111,7 @@ class ReinforceTrainer(Trainer):
             iteration += 1
 
         # Get the single episode
-        return self.trajectory_buffer.get_trajectory(flattened=True)
+        return self.trajectory_buffer.get_trajectory(flattened=False)[0]
 
     def _update_model_weights(self, trajectory):
         dict_args = {

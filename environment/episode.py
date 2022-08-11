@@ -80,7 +80,7 @@ class Episode:
     def _compute_discounted_cumulative_sum(x, discount_rate):
 
         n_elements = len(x)
-        result = np.zeros(n_elements)
+        result = np.zeros(n_elements, dtype=np.float32)
         last_value = 0
 
         for i, r in enumerate(x[::-1]):

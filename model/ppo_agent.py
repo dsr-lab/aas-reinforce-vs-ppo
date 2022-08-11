@@ -16,6 +16,7 @@ class PPOAgent(Agent):
         self.clip_ratio = clip_ratio
         self.clip_value_estimates = clip_value_estimates
 
+    # @tf.function
     def train_step(self, states, actions, action_probabilities, advantages, returns, old_values):
         with tf.GradientTape() as tape:
             actor_logits, values = self(states)
@@ -40,7 +41,8 @@ class PPOAgent(Agent):
             else:
                 critic_loss = 0.5 * tf.reduce_mean((returns - values) ** 2)
 
-            entropy_loss = self.compute_entropy(actor_logits) * 0.01
+            #entropy_loss = self.compute_entropy(actor_logits) * 0.01
+            entropy_loss = tf.numpy_function(self.compute_entropy, [actor_logits], tf.float32) * 0.01
 
             loss = actor_loss + critic_loss + entropy_loss
 
@@ -52,5 +54,5 @@ class PPOAgent(Agent):
     @staticmethod
     def compute_entropy(distribution):
         value, counts = np.unique(distribution, return_counts=True)
-        norm_counts = counts / counts.sum()
+        norm_counts = np.divide(counts, counts.sum(), dtype=np.float32)
         return -(norm_counts * np.log(norm_counts)).sum()
