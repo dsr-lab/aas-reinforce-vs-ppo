@@ -13,6 +13,9 @@ class RenderMode(enum.Enum):
 
 
 class EnvironmentWrapper:
+    """
+    EnvironmentWrapper is responsible to wrap the used functions for
+    """
     def __init__(self,
                  num: int,
                  env_name: str,
@@ -38,8 +41,6 @@ class EnvironmentWrapper:
             print(f'Using all the {self.n_actions} available actions.')
         else:
             print(f'Using {self.n_actions} actions, which is a subset of the available actions.')
-
-
 
     @abstractmethod
     def get_max_game_steps(self):
@@ -135,12 +136,12 @@ class NinjaEnvironment(EnvironmentWrapper):
 
 class LeaperEnvironment(EnvironmentWrapper):
     def __init__(self, num, render_mode: RenderMode, save_video):
-        model_output_to_actions = {
-            0: 1,  # LEFT
-            1: 4,  # NONE
-            2: 5,  # UP
-            3: 7   # RIGHT
-        }
+        # model_output_to_actions = {
+        #     0: 1,  # LEFT
+        #     1: 4,  # NONE
+        #     2: 5,  # UP
+        #     3: 7   # RIGHT
+        # }
 
         super(LeaperEnvironment, self).__init__(num=num,
                                                 env_name='leaper',

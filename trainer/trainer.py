@@ -44,7 +44,8 @@ class Trainer:
 
         # Init logger
         if self.save_logs:
-            logging.basicConfig(filename=f'{logs_path}log_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt',
+            filename = os.path.join(logs_path, f'log_{datetime.now().strftime("%Y%m%d%H%M%S")}.txt')
+            logging.basicConfig(filename=filename,
                                 filemode='a',
                                 format='%(message)s',
                                 level=logging.INFO)
@@ -58,8 +59,11 @@ class Trainer:
         pass
 
     @abstractmethod
-    def train(self):
+    def train(self, update_model=True):
         pass
+
+    def evaluate(self):
+        self.train(update_model=False)
 
     @staticmethod
     def normalize(x):

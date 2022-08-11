@@ -33,6 +33,7 @@ class Agent(tf.keras.Model):
             self.feature_extractor = NatureNet()
 
         # TODO: comments on initialization!
+        # https://arxiv.org/abs/2005.12729
         # Model heads
         self.critic = Head(n_outputs=1, kernel_initializer=tf.keras.initializers.Orthogonal(gain=1))
         self.actor = Head(n_outputs=n_actions, kernel_initializer=tf.keras.initializers.Orthogonal(gain=0.01))

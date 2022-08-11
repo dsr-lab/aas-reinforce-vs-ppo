@@ -1,21 +1,22 @@
 from environment.env_wrapper import RenderMode, NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
 
-AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
-ENVIRONMENT_TYPE = LeaperEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
+AGENT_TYPE = 'reinforce'  # valid values ['ppo', 'reinforce']
+ENVIRONMENT_TYPE = NinjaEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
 
 
 """""""""""""""""""""""""""""""""""""""""
 COMMON SETTINGS
 """""""""""""""""""""""""""""""""""""""""
-WEIGHTS_PATH = 'weights/'
-LOGS_PATH = 'logs/'
+WEIGHTS_PATH = 'weights'    # path where model weights are saved
+LOGS_PATH = 'logs/'         # path where execution logs are saved
+
 trainer_common_config = {
-    'use_negative_rewards_for_losses': False,
-    'backbone_type': 'impala',  # valid values ['impala', 'nature']
+    'use_negative_rewards_for_losses': True,   # assign -1 for every game loss
+    'backbone_type': 'impala',                  # Valid values ['impala', 'nature']
     'save_weights': True,
-    'weights_path': WEIGHTS_PATH,   # TODO: fix logs with os.append
+    'weights_path': WEIGHTS_PATH,
     'save_logs': True,
-    'logs_path': LOGS_PATH  # TODO: fix logs with os.append
+    'logs_path': LOGS_PATH
 }
 
 environment_common_config = {
@@ -30,7 +31,7 @@ PPO_N_AGENTS = 32
 
 ppo_trainer_config = {
     'n_agents': PPO_N_AGENTS,
-    'n_iterations': 256*3,
+    'n_iterations': 256,
     'agent_horizon': 1024,
     'batch_size': 256,
     'epochs_model_update': 12,
@@ -49,21 +50,12 @@ ppo_environment_config = {
 REINFORCE
 """""""""""""""""""""""""""""""""""""""""
 reinforce_trainer_config = {
-    'n_iterations': 8000000,  # TODO...
+    'n_iterations': 8388608,
+    'n_checkpoints': 10,
+    'n_logs': 256
 }
 
 reinforce_environment_config = {
     'num': 1,
     **environment_common_config
 }
-
-
-# print(f'N_AGENTS: {PPO_N_AGENTS}')
-# print(f'ITERATIONS: {PPO_ITERATIONS}')
-# print(f'AGENT_HORIZON: {PPO_AGENT_HORIZON}')
-# print(f'BATCH_SIZE: {PPO_BATCH_SIZE}')
-# print(f'EPOCHS_MODEL_UPDATE: {PPO_EPOCHS_MODEL_UPDATE}')
-# print(f'RANDOMIZE_SAMPLES: {PPO_RANDOMIZE_SAMPLES}')
-# print(f'AGENT_TYPE: {AGENT_TYPE}')
-# print(f'BACKBONE_TYPE: {BACKBONE_TYPE}')
-# print(f'SAVE_WEIGHTS: {SAVE_WEIGHTS}')

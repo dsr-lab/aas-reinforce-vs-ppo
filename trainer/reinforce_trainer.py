@@ -9,12 +9,16 @@ class ReinforceTrainer(Trainer):
 
     def __init__(self,
                  environment: EnvironmentWrapper,
-                 n_iterations=8000000,
+                 n_iterations,
+                 n_checkpoints,
+                 n_logs,
                  **trainer_args):
         super(ReinforceTrainer, self).__init__(environment=environment,
                                                **trainer_args)
 
         self.n_iterations = n_iterations
+        self.n_checkpoints = n_checkpoints
+        self.n_logs = n_logs
 
     def init_agent(self, backbone_type) -> Agent:
         return ReinforceAgent(n_actions=self.environment.n_actions,
@@ -25,25 +29,51 @@ class ReinforceTrainer(Trainer):
         return TrajectoryBuffer(max_agent_steps=self.environment.get_max_game_steps(),
                                 max_game_steps=self.environment.get_max_game_steps(),
                                 n_agents=1,
-                                obervation_shape=(64, 64, 3),
+                                obervation_shape=self.environment.get_state_shape(),
                                 set_negative_rewards_for_losses=set_negative_rewards_for_losses)
 
-    def train(self):
+    def train(self, update_model=True):
         total_steps = 0
         n_episodes = 0
+
+        # Variables for controlling when model's weights are saved
+        n_checkpoint_saved = 1
+        checkpoint_step = self.n_iterations / self.n_checkpoints
+
+        # Variables for controlling when logs are showns and saved
+        n_log_saved = 1
+        log_step = self.n_iterations / self.n_logs
+
+        # Run the trainer
         while total_steps < self.n_iterations:
             episode = self._create_episode()
 
-            iteration_loss = self._update_model_weights(episode)
+            if update_model:
+                iteration_loss = self._update_model_weights(episode)
 
-            self.log_iteration_results(n_episodes, iteration_loss, episode)
+                # Check whether weights can be saved
+                if self._can_process_iteration(total_steps, checkpoint_step, n_checkpoint_saved, episode.n_steps()):
+                    self.save_model_weights()
+                    n_checkpoint_saved += 1
 
-            # TODO....
-            if n_episodes % 1000 == 0:
-                self.save_model_weights()
+            # Check whether logs can be shown and saved
+            if self._can_process_iteration(total_steps, log_step, n_log_saved, episode.n_steps()):
+                self.log_iteration_results(n_episodes, iteration_loss, episode)
+                n_log_saved += 1
 
             total_steps += episode.n_steps()
             n_episodes += 1
+
+        if update_model:
+            self.save_model_weights()
+
+    def _can_process_iteration(self, total_steps, step, n_saved, episode_length):
+        return int(total_steps / (step * n_saved)) == 1 \
+               or self._is_last_iteration(total_steps, episode_length)
+
+    @staticmethod
+    def _is_last_iteration(total_steps, n_steps):
+        return total_steps + n_steps > total_steps
 
     def _create_episode(self):
         # Init trajectory
@@ -63,7 +93,7 @@ class ReinforceTrainer(Trainer):
                 break
 
             # Value of current state
-            value = self.model.get_value(state)
+            # value = self.model.get_value(state)
 
             # Add element to the current trajectory
             self.trajectory_buffer.add_element(state,
@@ -71,7 +101,7 @@ class ReinforceTrainer(Trainer):
                                                first,
                                                action,
                                                action_probability,
-                                               value,
+                                               None,
                                                None,
                                                iteration)
 
@@ -81,13 +111,14 @@ class ReinforceTrainer(Trainer):
             iteration += 1
 
         # Get the single episode
-        return self.trajectory_buffer.get_trajectory(flattened=False)[0]
+        return self.trajectory_buffer.get_trajectory(flattened=True)
 
     def _update_model_weights(self, trajectory):
         dict_args = {
             "states": trajectory.states,
             "action_probabilities": trajectory.action_probabilities,
             "returns": trajectory.returns,
+            "actions": trajectory.actions
         }
 
         iteration_loss = self.model.train_step(**dict_args)

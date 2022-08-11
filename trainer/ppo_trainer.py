@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 
 from model.agent import Agent
 from model.ppo_agent import PPOAgent
@@ -32,12 +33,12 @@ class PPOTrainer(Trainer):
         self.normalize_advantages = normalize_advantages
         self.clip_value_estimates = clip_value_estimates
 
-        super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
-
         # Init variables required for processing the mini-batches
         total_time_steps = n_agents * agent_horizon
         self.n_batches = total_time_steps // batch_size
         self.time_step_indices = np.arange(total_time_steps)
+
+        super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
 
     def init_agent(self, backbone_type) -> Agent:
         return PPOAgent(n_actions=self.environment.n_actions,
@@ -50,21 +51,22 @@ class PPOTrainer(Trainer):
         return TrajectoryBuffer(max_agent_steps=self.agent_horizon,
                                 max_game_steps=self.environment.get_max_game_steps(),
                                 n_agents=self.n_agents,
-                                obervation_shape=(64, 64, 3),  # TODO: parametrize
+                                obervation_shape=self.environment.get_state_shape(),
                                 set_negative_rewards_for_losses=set_negative_rewards_for_losses)
 
-    def train(self):
+    def train(self, training=True):
 
         for iteration in range(self.n_iterations):
 
             trajectory = self._create_trajectory()
 
-            iteration_loss = self._update_model_weights(trajectory)
+            if training:
+                iteration_loss = self._update_model_weights(trajectory)
+
+                if iteration % 10 == 0 or iteration == self.n_iterations - 1:
+                    self.save_model_weights()
 
             self.log_iteration_results(iteration, iteration_loss, trajectory)
-
-            if iteration % 10 == 0 or iteration == self.n_iterations - 1:
-                self.save_model_weights()
 
     def _create_trajectory(self):
         # Init trajectory

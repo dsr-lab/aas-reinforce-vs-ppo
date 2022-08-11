@@ -5,7 +5,7 @@ import numpy as np
 class FlattenedTrajectory(Episode):
     """
     The FlattenedTrajectory object contains all the episodes gathered from the environmnent.
-    It is basically
+    Basically, it is a very big Episode, with some additional variables used for statistics.
     """
     def __init__(self, episodes: [Episode], max_game_steps=1000):
         super().__init__()
