@@ -42,7 +42,7 @@ class TrajectoryBuffer:
         self.new_values[step] = new_value
         self.action_probabilities[step] = action_probability
 
-    def get_trajectory(self, flattened=True):
+    def get_trajectory(self):  #, flattened=True):
 
         self._penalize_game_fails(update_also_true_rewards=self.set_negative_rewards_for_losses)
 
@@ -50,10 +50,12 @@ class TrajectoryBuffer:
 
         self._split_in_episodes()
 
-        if flattened:
-            return FlattenedTrajectory(self.episodes, max_game_steps=self.max_game_steps)
-        else:
-            return self.episodes
+        return FlattenedTrajectory(self.episodes, max_game_steps=self.max_game_steps)
+
+        # if flattened:
+        #     return FlattenedTrajectory(self.episodes, max_game_steps=self.max_game_steps)
+        # else:
+        #     return self.episodes
 
     def reset(self):
         self.states = np.zeros((self.max_agent_steps, self.n_agents,) + self.obervation_shape, dtype=np.float32)

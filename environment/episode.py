@@ -2,7 +2,9 @@ import numpy as np
 
 
 class Episode:
-    def __init__(self):
+    def __init__(self,
+                 gam=0.99,
+                 lam=0.95):
 
         self.states = None
         self.rewards = None
@@ -15,11 +17,14 @@ class Episode:
         self.returns = None
         self.advantages = None
 
+        self.gam = gam
+        self.lam = lam
+
     def n_steps(self):
         return len(self.actions) if self.actions is not None else 0
 
-    def compute_returns(self, normalize=False, gamma=0.99):
-        self.returns = self._compute_discounted_cumulative_sum(self.true_rewards, gamma)
+    def compute_returns(self, normalize=False):
+        self.returns = self._compute_discounted_cumulative_sum(self.true_rewards, self.gam)
 
         if normalize:
             returns_mean, returns_std = (
@@ -29,7 +34,7 @@ class Episode:
 
             self.returns = (self.returns - returns_mean) / (returns_std + 1e-8)
 
-    def compute_advantages(self, normalize=False, gamma=0.99, lamda=0.95, v_t_next=0):
+    def compute_advantages(self, normalize=False, v_t_next=0):
         """
            Generalized Advantage Estimate (GAE): https://arxiv.org/abs/1506.02438
 
@@ -58,8 +63,8 @@ class Episode:
             r_t = self.true_rewards[t]
             v_t = self.values[t]
 
-            delta = r_t + gamma * v_t_next - v_t
-            adv_t = delta + gamma * lamda * adv_t_prev
+            delta = r_t + self.gam * v_t_next - v_t
+            adv_t = delta + self.gam * self.lam * adv_t_prev
 
             adv_t_prev = adv_t
             v_t_next = v_t

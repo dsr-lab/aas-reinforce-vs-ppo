@@ -1,3 +1,4 @@
+import json
 import config
 from pathlib import Path
 
@@ -10,23 +11,43 @@ def create_required_directories():
     Path(config.WEIGHTS_PATH).mkdir(parents=True, exist_ok=True)
 
 
+def get_trainer_configurations():
+
+    if config.AGENT_TYPE == 'ppo':
+        trainer_type = PPOTrainer
+        training_config = config.ppo_train_config
+    elif config.AGENT_TYPE == 'reinforce':
+        trainer_type = ReinforceTrainer
+        training_config = config.reinfoce_train_config
+    else:
+        raise NotImplementedError('Agent type not supported. You should choose either ppo or reinforce.')
+
+    # Evaluation config is the same regardless the agent type
+    evaluation_config = config.evaluation_config
+
+    return trainer_type, training_config, evaluation_config
+
+
 def main():
     create_required_directories()
 
-    if config.AGENT_TYPE == 'ppo':
-        env = config.ENVIRONMENT_TYPE(**config.ppo_environment_config)
+    env = config.ENVIRONMENT_TYPE(**config.environment_config)
 
-        trainer = PPOTrainer(environment=env,
-                             **config.ppo_trainer_config,
-                             **config.trainer_common_config)
+    print(f'Policy: {config.AGENT_TYPE}')
+    print(f'Environment: {config.ENVIRONMENT_TYPE.__name__}')
+
+    trainer_type, training_config, evaluation_config = get_trainer_configurations()
+
+    if config.TRAIN:
+        print(f'Train configuration:')
+        print(json.dumps(training_config, indent=4))
+        trainer = trainer_type(environment=env, **training_config)
     else:
-        env = config.ENVIRONMENT_TYPE(**config.reinforce_environment_config)
+        print(f'Eval configuration:')
+        print(json.dumps(evaluation_config, indent=4))
+        trainer = trainer_type(environment=env, **evaluation_config)
 
-        trainer = ReinforceTrainer(environment=env,
-                                   **config.reinforce_trainer_config,
-                                   **config.trainer_common_config)
-
-    trainer.train()
+    trainer.train(training=config.TRAIN)
 
 
 if __name__ == '__main__':

@@ -9,12 +9,21 @@ class PPOAgent(Agent):
     def __init__(self,
                  n_actions,
                  backbone_type,
+                 learning_rate,
                  clip_ratio=0.2,
-                 clip_value_estimates=False):
-        super(PPOAgent, self).__init__(n_actions=n_actions, backbone_type=backbone_type)
+                 clip_value_estimates=False,
+                 entropy_bonus_coefficient=0.01,
+                 critic_loss_coefficient=0.5):
+
+        super(PPOAgent, self).__init__(n_actions=n_actions,
+                                       backbone_type=backbone_type,
+                                       learning_rate=learning_rate)
 
         self.clip_ratio = clip_ratio
         self.clip_value_estimates = clip_value_estimates
+
+        self.entropy_bonus_coefficient = entropy_bonus_coefficient
+        self.critic_loss_coefficient = critic_loss_coefficient
 
     @tf.function
     def train_step(self, states, actions, action_probabilities, advantages, returns, old_values):
@@ -37,17 +46,21 @@ class PPOAgent(Agent):
             if self.clip_value_estimates:
                 values_clipped = old_values + tf.clip_by_value(values - old_values, - self.clip_ratio, self.clip_ratio)
                 critic_loss_clipped = tf.maximum(tf.square(values - returns), tf.square(values_clipped - returns))
-                critic_loss = 0.5 * tf.reduce_mean(critic_loss_clipped)
+                critic_loss = self.critic_loss_coefficient * tf.reduce_mean(critic_loss_clipped)
             else:
-                critic_loss = 0.5 * tf.reduce_mean((returns - values) ** 2)
+                critic_loss = self.critic_loss_coefficient * tf.reduce_mean(tf.square(values - returns))
 
-            #entropy_loss = self.compute_entropy(actor_logits) * 0.01
-            entropy_loss = tf.numpy_function(self.compute_entropy, [actor_logits], tf.float32) * 0.01
+            entropy_loss = \
+                tf.numpy_function(self.compute_entropy, [actor_logits], tf.float32) * self.entropy_bonus_coefficient
 
             loss = actor_loss + critic_loss + entropy_loss
 
+        # Compute the gradients
         policy_grads = tape.gradient(loss, self.trainable_variables)
-        self.optimizer.apply_gradients(zip(policy_grads, self.trainable_variables))
+        # Gradients clipping
+        grads_clipped, _ = tf.clip_by_global_norm(policy_grads, 0.5)
+        # Update model weights
+        self.optimizer.apply_gradients(zip(grads_clipped, self.trainable_variables))
 
         return loss
 

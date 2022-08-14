@@ -149,7 +149,6 @@ class LeaperEnvironment(EnvironmentWrapper):
                                                 save_video=save_video,
                                                 model_output_to_actions=None)
 
-    @abstractmethod
     def get_max_game_steps(self):
         return 500
 
@@ -169,6 +168,5 @@ class CoinrunEnvironment(EnvironmentWrapper):
                                                  save_video=save_video,
                                                  model_output_to_actions=None)
 
-    @abstractmethod
     def get_max_game_steps(self):
         return 1000

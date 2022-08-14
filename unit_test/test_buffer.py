@@ -58,7 +58,7 @@ class TestBuffer(TestCase):
         buffer.rewards = self.rewards
 
         # Act
-        _ = buffer.get()
+        _ = buffer.get_trajectory()
         episodes = buffer.episodes
 
         # Assert
@@ -73,7 +73,7 @@ class TestBuffer(TestCase):
         buffer.rewards = self.rewards
 
         # Act
-        _ = buffer.get()
+        _ = buffer.get_trajectory()
         episodes = buffer.episodes
 
         # Assert
@@ -122,7 +122,7 @@ class TestBuffer(TestCase):
         buffer.reward = rewards
 
         # Act
-        _ = buffer.get()
+        _ = buffer.get_trajectory()
         episodes = buffer.episodes
 
         # Assert
@@ -165,7 +165,7 @@ class TestBuffer(TestCase):
         buffer.rewards = rewards
 
         # Act
-        _ = buffer.get()
+        _ = buffer.get_trajectory()
         episodes = buffer.episodes
 
         # Assert

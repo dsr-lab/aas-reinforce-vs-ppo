@@ -29,8 +29,10 @@ class Agent(tf.keras.Model):
         # Backbone
         if backbone_type == 'impala':
             self.feature_extractor = ImpalaNet()
-        else:
+        elif backbone_type == 'nature':
             self.feature_extractor = NatureNet()
+        else:
+            raise NotImplementedError('Backbone type not supported. You should choose either impala or nature.')
 
         # TODO: comments on initialization!
         # https://arxiv.org/abs/2005.12729
