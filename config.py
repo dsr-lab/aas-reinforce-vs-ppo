@@ -3,14 +3,14 @@ from environment.env_wrapper import RenderMode, NinjaEnvironment, LeaperEnvironm
 # ----------------------------------------
 # COMMON SETTINGS
 # ----------------------------------------
-TRAIN = True
+TRAIN = False
 N_AGENTS = 32
 N_EVAL_AGENTS = 1
 
-AGENT_TYPE = 'reinforce'  # valid values ['ppo', 'reinforce']
-ENVIRONMENT_TYPE = NinjaEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
+AGENT_TYPE = 'ppo'  # valid values ['ppo', 'reinforce']
+ENVIRONMENT_TYPE = LeaperEnvironment  # valid values [NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment]
 
-WEIGHTS_PATH = 'weights'  # path where model weights are saved
+WEIGHTS_PATH = 'weights/ppo_leaper'  # path where model weights are saved
 LOGS_PATH = 'logs'  # path where execution logs are saved
 
 train_config = {
@@ -65,6 +65,6 @@ reinfoce_train_config = {
 # ----------------------------------------
 environment_config = {
     'num': N_AGENTS if TRAIN else N_EVAL_AGENTS,
-    'render_mode': RenderMode.off,  # valid values [RenderMode.off, RenderMode.on]
-    'save_video': False
+    'render_mode': RenderMode.on,  # valid values [RenderMode.off, RenderMode.on]
+    'save_video': True
 }

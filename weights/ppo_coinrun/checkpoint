@@ -1,0 +1,2 @@
+model_checkpoint_path: "ckpt-78"
+all_model_checkpoint_paths: "ckpt-78"
