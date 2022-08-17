@@ -4,13 +4,14 @@ from model.agent import Agent
 
 class ReinforceAgent(Agent):
 
-    def __init__(self, n_actions, backbone_type, learning_rate, with_baseline):
+    def __init__(self, n_actions, backbone_type, learning_rate, with_baseline, critic_loss_coefficient=0.5):
 
         super(ReinforceAgent, self).__init__(n_actions=n_actions,
                                              backbone_type=backbone_type,
                                              learning_rate=learning_rate)
 
         self.with_baseline = with_baseline
+        self.critic_loss_coefficient = critic_loss_coefficient
 
         if with_baseline is False:
             self.critic.trainable = False
@@ -23,14 +24,14 @@ class ReinforceAgent(Agent):
 
             # Compute the policy (actor) loss
             actions = tf.expand_dims(actions, axis=-1)
-            probabilities = self._compute_probabilities(actor_logits, actions)
+            probabilities = self.compute_probabilities(actor_logits, actions)
             log_action_probabilities = tf.math.log(probabilities)
             policy_loss = -tf.reduce_mean((returns - values) * log_action_probabilities)
 
             # Compute the value (critic) loss
             critic_loss = 0
             if self.with_baseline:
-                critic_loss = 0.5 * tf.reduce_mean(tf.square(values - returns))
+                critic_loss = self.critic_loss_coefficient * tf.reduce_mean(tf.square(values - returns))
 
             # Total loss
             loss = policy_loss + critic_loss

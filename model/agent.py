@@ -69,14 +69,14 @@ class Agent(tf.keras.Model):
         # Sample an action
         action = tf.random.categorical(action_logits, 1)
 
-        action_probability = self._compute_probabilities(action_logits, action)
+        action_probability = self.compute_probabilities(action_logits, action)
 
         action = tf.squeeze(action, axis=-1)
 
         return action, action_probability
 
     @staticmethod
-    def _compute_probabilities(logits, actions):
+    def compute_probabilities(logits, actions):
         action_distribution = tf.nn.softmax(logits)
         probabilities = tf.gather_nd(action_distribution, actions, batch_dims=actions.shape[1])
 

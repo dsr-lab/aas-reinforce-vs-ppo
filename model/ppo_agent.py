@@ -31,7 +31,7 @@ class PPOAgent(Agent):
             actor_logits, values = self(states)
 
             actions = tf.expand_dims(actions, axis=-1)
-            ratio = self._compute_probabilities(actor_logits, actions) / action_probabilities
+            ratio = self.compute_probabilities(actor_logits, actions) / action_probabilities
 
             min_advantage = tf.where(
                 advantages > 0,
