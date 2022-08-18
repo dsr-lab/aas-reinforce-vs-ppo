@@ -2,6 +2,9 @@ import numpy as np
 
 
 class Episode:
+    """
+    Class for managing single episodes that are collected while creating the trajectory.
+    """
     def __init__(self,
                  gam=0.99,
                  lam=0.95):
@@ -21,6 +24,14 @@ class Episode:
         self.lam = lam
 
     def n_steps(self):
+        """
+        Number of time step of the episode
+
+        Returns
+        ----------
+        counter: int
+            The number of time steps
+        """
         return len(self.actions) if self.actions is not None else 0
 
     def compute_returns(self, normalize=False):

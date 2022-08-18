@@ -34,9 +34,7 @@ class Agent(tf.keras.Model):
         else:
             raise NotImplementedError('Backbone type not supported. You should choose either impala or nature.')
 
-        # TODO: comments on initialization!
-        # https://arxiv.org/abs/2005.12729
-        # Model heads
+        # Model heads (weight initialization: https://arxiv.org/abs/2005.12729)
         self.critic = Head(n_outputs=1, kernel_initializer=tf.keras.initializers.Orthogonal(gain=1))
         self.actor = Head(n_outputs=n_actions, kernel_initializer=tf.keras.initializers.Orthogonal(gain=0.01))
 

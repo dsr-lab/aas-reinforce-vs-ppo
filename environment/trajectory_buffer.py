@@ -5,7 +5,9 @@ from environment.flattened_trajectory import FlattenedTrajectory
 
 
 class TrajectoryBuffer:
-
+    """
+    Class that stores all the information gathered from the environment while creating the trajectory.
+    """
     def __init__(self,
                  max_agent_steps=1000,
                  max_game_steps=1000,
@@ -42,7 +44,7 @@ class TrajectoryBuffer:
         self.new_values[step] = new_value
         self.action_probabilities[step] = action_probability
 
-    def get_trajectory(self):  #, flattened=True):
+    def get_trajectory(self):
 
         self._penalize_game_fails(update_also_true_rewards=self.set_negative_rewards_for_losses)
 
@@ -51,11 +53,6 @@ class TrajectoryBuffer:
         self._split_in_episodes()
 
         return FlattenedTrajectory(self.episodes, max_game_steps=self.max_game_steps)
-
-        # if flattened:
-        #     return FlattenedTrajectory(self.episodes, max_game_steps=self.max_game_steps)
-        # else:
-        #     return self.episodes
 
     def reset(self):
         self.states = np.zeros((self.max_agent_steps, self.n_agents,) + self.obervation_shape, dtype=np.float32)
@@ -86,7 +83,7 @@ class TrajectoryBuffer:
             |    5       |     False     |
             |    6       |     False     |
 
-        At time_step=4 we have the beginning of a new episode, therefore it is necessary to check if the reward
+        At time_step=4 we have the beginning of a new episode, therefore it is necessary to check the reward
         at the previous time step:
           - if > 0 ==> Game won, do not penalize
           - if = 0 ==> Game lost, penalize
@@ -99,6 +96,13 @@ class TrajectoryBuffer:
             because we never need to possibly penalize the last row of a trajectory, because we cannot know wheter the
             next time step would cause a win or a loss.
 
+        Parameters
+        ----------
+        update_also_true_rewards: bool
+            If this flag is set to true, then also the self.true_rewards array is updated. Basically, it will be equal
+            to the self.rewards array.
+            This flag should be set to True ONLY if for the future computing of advantages and returns must take in
+            consideration also negative rewards (see the report section 'Credit assignment problem' )
 
         """
         shifted_first = self.firsts[1:, :]
@@ -112,8 +116,8 @@ class TrajectoryBuffer:
     def _force_at_least_one_episode_per_agent(self):
         """
         This should not be necessary, because at the beginning of a new trajectory the environment is reset, and
-        new episodes are automatically started. Nevertheless, this function has been implemented also for testing
-        purposes (see test package).
+        new episodes are automatically started (i.e., their value is already set to True). Nevertheless, this function
+        has been implemented also for testingvpurposes (see test package).
         """
         self.firsts[0, :] = True
 

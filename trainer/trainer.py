@@ -12,7 +12,12 @@ from environment.trajectory_buffer import TrajectoryBuffer
 
 
 class Trainer:
-
+    """
+    Convenience class responsible of:
+     - creating the model
+     - creating the trajectory
+     - trainining the model
+    """
     def __init__(self,
                  environment: EnvironmentWrapper,
                  n_agents=32,
@@ -91,7 +96,15 @@ class Trainer:
         pass
 
     def train(self, training=True):
+        """
+        The actual train loop
 
+        Parameters
+        ----------
+        training; bool
+            If True, then the model weights will be updated.
+            It should be set to false for model evaluation purposes.
+        """
         for iteration in range(self.n_iterations):
 
             trajectory = self.create_trajectory()

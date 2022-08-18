@@ -21,6 +21,19 @@ class ReinforceTrainer(Trainer):
                                                **trainer_args)
 
     def update_model_weights(self, trajectory):
+        """
+        Update the model weights. Differently from the PPOTrainer, the trajectory is used only once for updating the
+        model weights.
+
+        Parameters
+        ----------
+        trajectory: FlattenedTrajectory
+            The trajectory with all episodes flattened in a single array.
+
+        Returns
+        ----------
+        iteration_loss: the recorded loss recorded while updating the weights
+        """
         iteration_loss = 0
 
         if self.randomize_samples:

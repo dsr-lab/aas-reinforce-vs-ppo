@@ -14,7 +14,7 @@ class RenderMode(enum.Enum):
 
 class EnvironmentWrapper:
     """
-    EnvironmentWrapper is responsible to wrap the used functions for
+    This class conveniently wraps some Procgen's environments methods.
     """
     def __init__(self,
                  num: int,
@@ -36,7 +36,6 @@ class EnvironmentWrapper:
 
         # Logs
         print(f'GAME: {env_name}')
-
         if model_output_to_actions is None:
             print(f'Using all the {self.n_actions} available actions.')
         else:
@@ -44,6 +43,11 @@ class EnvironmentWrapper:
 
     @abstractmethod
     def get_max_game_steps(self):
+        """
+        After a certain number of steps the environment is automatically reset. This method is used in order to
+        track the maximum number of timesteps, so as to use this information for statistical purposes (e.g., count
+        the number of incomplete games).
+        """
         pass
 
     def step(self, actions):
@@ -65,7 +69,27 @@ class EnvironmentWrapper:
         return self.environment.ob_space['rgb'].shape
 
     def _configure_actions(self, model_output_to_actions):
+        """
+        Create the number of actions that are managed by the model that uses these environments. This can be useful
+        especially if limiting the possible number of actions for helping the training procedure.
 
+        Parameters
+        ----------
+        model_output_to_actions:  dict
+            Dictionary with:
+                - keys that correspond to the Actor's output
+                - values that correspond to a specific environment action (see function self.environment.get_combos()
+                  for the complete action list)
+
+        Returns
+        ----------
+        n_actions: int
+            The number of actions supported by both the model and the environment.
+        model_output_to_actions: dict
+            If not None, then it is same dictionary passed as input. Otherwise, it's a new dictionary that maps all the
+            14 actions supported by the environment.
+
+        """
         if model_output_to_actions is None:
             n_actions = len(self.environment.get_combos())
             key_value = np.arange(0, len(self.environment.get_combos()))

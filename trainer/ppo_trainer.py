@@ -31,6 +31,19 @@ class PPOTrainer(Trainer):
         super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
 
     def update_model_weights(self, trajectory):
+        """
+        Update the model weights according to the PPO paper (i.e., use the same trajectory for update the model
+        multiple times).
+
+        Parameters
+        ----------
+        trajectory: FlattenedTrajectory
+            The trajectory with all episodes flattened in a single array.
+
+        Returns
+        ----------
+        iteration_loss: the recorded loss recorded while updating the weights
+        """
         iteration_loss = 0
         for epoch in range(self.epochs_model_update):
 

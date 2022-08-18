@@ -2,7 +2,9 @@ import tensorflow as tf
 
 
 class Head(tf.keras.layers.Layer):
-
+    """
+    Class for creating a head of a model (i.e., last(s) dense layers)
+    """
     def __init__(self,
                  n_outputs,
                  hidden_sizes=None,
