@@ -30,7 +30,8 @@ class Trainer:
                  save_weights=True,
                  logs_path='logs',
                  weights_path='weights',
-                 use_negative_rewards_for_losses=True
+                 use_negative_rewards_for_losses=True,
+                 normalize_advantages=False
                  ):
 
         """
@@ -75,6 +76,7 @@ class Trainer:
         self.save_weights = save_weights
         self.weights_path = weights_path
         self.environment = environment
+        self.normalize_advantages = normalize_advantages
 
         # Init variables required for processing the mini-batches
         total_time_steps = n_agents * self.agent_horizon

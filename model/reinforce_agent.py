@@ -4,26 +4,20 @@ from model.agent import Agent
 
 class ReinforceAgent(Agent):
 
-    def __init__(self, n_actions, backbone_type, learning_rate, with_baseline, critic_loss_coefficient=0.5):
+    def __init__(self, with_baseline, critic_loss_coefficient=0.5, **base_agent_config):
         """
 
         Parameters
         ----------
-        n_actions: int
-            The number of actions that the agent can do. Its value corresponds to the number of outputs the Actor
-        backbone_type: str
-            The feature extractor/backbone type to use. Valid values are: 'impala', 'nature'
-        learning_rate: float
-            The learning rate used for initializing the Optimizer
         with_baseline: bool
             If True, then also the baseline is considered during the training
         critic_loss_coefficient: float
             Coefficient used for scaling the critic loss (called c1 in the original PPO paper)
+        base_agent_config: dict
+            Dictionary containing all the configuration required for initializing an instance of Agent class
         """
 
-        super(ReinforceAgent, self).__init__(n_actions=n_actions,
-                                             backbone_type=backbone_type,
-                                             learning_rate=learning_rate)
+        super(ReinforceAgent, self).__init__(**base_agent_config)
 
         self.with_baseline = with_baseline
         self.critic_loss_coefficient = critic_loss_coefficient

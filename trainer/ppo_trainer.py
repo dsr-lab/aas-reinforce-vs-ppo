@@ -9,14 +9,8 @@ class PPOTrainer(Trainer):
 
     def __init__(self,
                  environment: EnvironmentWrapper,
-                 clip_ratio=0.2,
-                 backbone_type='impala',
-                 learning_rate=5e-4,
-                 entropy_bonus_coefficient=0.01,
-                 critic_loss_coefficient=0.5,
-                 clip_value_estimates=False,
-                 normalize_advantages=False,
-                 **trainer_args):
+                 agent_config: dict,
+                 trainer_config: dict):
         """
         Class used for training a model based on a PPO Agent.
 
@@ -24,34 +18,15 @@ class PPOTrainer(Trainer):
         ----------
         environment: EnvironmentWrapper
             The environment type. Valid values are: NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
-        clip_ratio: float
-            The clip ratio used for limiting policy updates
-        backbone_type: str
-            The feature extractor/backbone type to use. Valid values are: 'impala', 'nature'
-        learning_rate: float
-            The learning rate used for initializing the Optimizer
-        entropy_bonus_coefficient: float
-            Coefficient used for scaling the entropy bonus (called c2 in the original PPO paper)
-        critic_loss_coefficient: float
-            Coefficient used for scaling the critic loss (called c1 in the original PPO paper)
-        clip_value_estimates: bool
-            If True, then the new value estimates will be limited considering also the old estimates
-        normalize_advantages: bool
-            If True, then the advantages will be normalized at batch level during the training
-        trainer_args: dict
+        agent_config: dict
+            Dictionary containing all configurations required for the Agent
+        trainer_config: dict
             Dictionary containing common configurations used for initializing the parent object (Trainer)
         """
 
-        self.normalize_advantages = normalize_advantages
-        self.model = PPOAgent(n_actions=environment.n_actions,
-                              backbone_type=backbone_type,
-                              clip_ratio=clip_ratio,
-                              clip_value_estimates=clip_value_estimates,
-                              learning_rate=learning_rate,
-                              entropy_bonus_coefficient=entropy_bonus_coefficient,
-                              critic_loss_coefficient=critic_loss_coefficient)
+        self.model = PPOAgent(**agent_config)
 
-        super(PPOTrainer, self).__init__(environment=environment, **trainer_args)
+        super(PPOTrainer, self).__init__(environment=environment, **trainer_config)
 
     def update_model_weights(self, trajectory):
         """

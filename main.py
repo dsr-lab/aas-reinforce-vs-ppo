@@ -15,17 +15,14 @@ def get_trainer_configurations():
 
     if config.AGENT_TYPE == 'ppo':
         trainer_type = PPOTrainer
-        training_config = config.ppo_train_config
+        agent_config = config.ppo_agent_config
     elif config.AGENT_TYPE == 'reinforce':
         trainer_type = ReinforceTrainer
-        training_config = config.reinfoce_train_config
+        agent_config = config.reinfoce_agent_config
     else:
         raise NotImplementedError('Agent type not supported. You should choose either ppo or reinforce.')
 
-    # Evaluation config is the same regardless the agent type
-    evaluation_config = config.evaluation_config
-
-    return trainer_type, training_config, evaluation_config
+    return trainer_type, agent_config
 
 
 def main():
@@ -36,16 +33,18 @@ def main():
     print(f'Policy: {config.AGENT_TYPE}')
     print(f'Environment: {config.ENVIRONMENT_TYPE.__name__}')
 
-    trainer_type, training_config, evaluation_config = get_trainer_configurations()
+    trainer_type, agent_config = get_trainer_configurations()
+
+    agent_config['n_actions'] = env.n_actions
 
     if config.TRAIN:
         print(f'Train configuration:')
-        print(json.dumps(training_config, indent=4))
-        trainer = trainer_type(environment=env, **training_config)
+        print(json.dumps(config.train_config, indent=4))
+        trainer = trainer_type(environment=env, agent_config=agent_config, trainer_config=config.train_config)
     else:
         print(f'Eval configuration:')
-        print(json.dumps(evaluation_config, indent=4))
-        trainer = trainer_type(environment=env, **evaluation_config)
+        print(json.dumps(config.evaluation_config, indent=4))
+        trainer = trainer_type(environment=env, agent_config=agent_config, trainer_config=config.evaluation_config)
 
     trainer.train(training=config.TRAIN)
 
