@@ -31,16 +31,18 @@ class ReinforceAgent(Agent):
         with tf.GradientTape() as tape:
             actor_logits, values = self(states)
 
+            # Compute the value (critic) loss or reset values to zero
+            critic_loss = 0
+            if self.with_baseline is True:
+                critic_loss = self.critic_loss_coefficient * tf.reduce_mean(tf.square(values - returns))
+            else:
+                values = tf.math.multiply(values, 0)
+
             # Compute the policy (actor) loss
             actions = tf.expand_dims(actions, axis=-1)
             probabilities = self.compute_probabilities(actor_logits, actions)
             log_action_probabilities = tf.math.log(probabilities)
             policy_loss = -tf.reduce_mean((returns - values) * log_action_probabilities)
-
-            # Compute the value (critic) loss
-            critic_loss = 0
-            if self.with_baseline:
-                critic_loss = self.critic_loss_coefficient * tf.reduce_mean(tf.square(values - returns))
 
             # Total loss
             loss = policy_loss + critic_loss
