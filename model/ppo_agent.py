@@ -14,6 +14,26 @@ class PPOAgent(Agent):
                  clip_value_estimates=False,
                  entropy_bonus_coefficient=0.01,
                  critic_loss_coefficient=0.5):
+        """
+        Class used for initializing the PPOAgent, which is a trainable Tensorflow model
+
+        Parameters
+        ----------
+        n_actions: int
+            The number of actions that the agent can do. Its value corresponds to the number of outputs the Actor
+        backbone_type:
+            The feature extractor/backbone type to use. Valid values are: 'impala', 'nature'
+        learning_rate:
+            The learning rate used for initializing the Optimizer
+        clip_ratio: float
+            The clip ratio used for limiting policy updates
+        clip_value_estimates: bool
+            If True, then the new value estimates will be limited considering also the old estimates
+        entropy_bonus_coefficient: float
+            Coefficient used for scaling the entropy bonus (called c2 in the original PPO paper)
+        critic_loss_coefficient:
+            Coefficient used for scaling the critic loss (called c1 in the original PPO paper)
+        """
 
         super(PPOAgent, self).__init__(n_actions=n_actions,
                                        backbone_type=backbone_type,

@@ -33,6 +33,38 @@ class Trainer:
                  use_negative_rewards_for_losses=True
                  ):
 
+        """
+        Init the trainer and all the required objects for training or evaluating an Agent.
+
+        Parameters
+        ----------
+        environment: EnvironmentWrapper
+            The environment type. Valid values are: NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
+        n_agents: int
+            Number of parallel agents. Used for creating a Trajectory when training or evaluating the model
+        n_iterations: int
+            Number of iterations (i.e., the number of epochs)
+        agent_horizon: int
+            Maximum steps that a single agent can compute
+        batch_size: int
+            The batch size used for updating the model weights
+        epochs_model_update: int
+            The number of times a single trajectory is reused for training the policy
+        randomize_samples: bool
+            If True, then the samples are shuffled before updating the model
+        save_logs: bool
+            If True, the logs will be saved in the logs_path
+        save_weights: bool
+            If True, the weights will be save in the weights_path
+        logs_path: str
+            Where logs are saved during the training or evaluation of the model
+        weights_path: str
+            Where model weights are saved during the training of the model
+        use_negative_rewards_for_losses: bool
+            Assign -1 for every game loss or incomplete. Refer to the 'Credit assignment problem' in the project report
+            (found in the assets/ directory).
+        """
+
         # Init trainer configuration variables
         self.n_iterations = n_iterations
         self.agent_horizon = agent_horizon

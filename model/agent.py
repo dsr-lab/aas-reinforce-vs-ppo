@@ -12,7 +12,18 @@ class Agent(tf.keras.Model):
                  n_actions,
                  learning_rate=5e-4,
                  backbone_type='impala'):
+        """
+        Create an agent (i.e., a Tensorflow model that can be trained)
 
+        Parameters
+        ----------
+        n_actions: int
+            The number of actions that the agent can do. Its value corresponds to the number of outputs the Actor.
+        learning_rate: float
+            The learning rate used for initializing the Optimizer
+        backbone_type: str
+            The feature extractor/backbone type to use. Valid values are: 'impala', 'nature'
+        """
         super(Agent, self).__init__()
 
         # Init Adam parameters as tf.Variable so as to avoid warnings when restoring model weights
