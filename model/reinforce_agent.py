@@ -53,7 +53,3 @@ class ReinforceAgent(Agent):
         self.optimizer.apply_gradients(zip(grads_clipped, self.trainable_variables))
 
         return loss
-
-
-
-

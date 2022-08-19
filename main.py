@@ -11,7 +11,7 @@ def create_required_directories():
     Path(config.WEIGHTS_PATH).mkdir(parents=True, exist_ok=True)
 
 
-def get_trainer_configurations():
+def get_trainer_configurations(n_actions):
 
     if config.AGENT_TYPE == 'ppo':
         trainer_type = PPOTrainer
@@ -21,6 +21,9 @@ def get_trainer_configurations():
         agent_config = config.reinfoce_agent_config
     else:
         raise NotImplementedError('Agent type not supported. You should choose either ppo or reinforce.')
+
+    # Update the number of actions supported by the environment
+    agent_config['n_actions'] = n_actions
 
     return trainer_type, agent_config
 
@@ -33,9 +36,7 @@ def main():
     print(f'Policy: {config.AGENT_TYPE}')
     print(f'Environment: {config.ENVIRONMENT_TYPE.__name__}')
 
-    trainer_type, agent_config = get_trainer_configurations()
-
-    agent_config['n_actions'] = env.n_actions
+    trainer_type, agent_config = get_trainer_configurations(env.n_actions)
 
     if config.TRAIN:
         print(f'Train configuration:')

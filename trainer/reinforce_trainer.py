@@ -8,8 +8,8 @@ class ReinforceTrainer(Trainer):
 
     def __init__(self,
                  environment: EnvironmentWrapper,
-                 agent_config,
-                 trainer_config):
+                 agent_config: dict,
+                 trainer_config: dict):
         """
         Class used for training a model based on a REINFORCE Agent.
 

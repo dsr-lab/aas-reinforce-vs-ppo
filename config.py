@@ -3,7 +3,7 @@ from environment.env_wrapper import RenderMode, NinjaEnvironment, LeaperEnvironm
 # ----------------------------------------
 # COMMON SETTINGS
 # ----------------------------------------
-TRAIN = True  # If True, then the model is trained (i.e., weights are updated)
+TRAIN = False  # If True, then the model is trained (i.e., weights are updated)
 N_AGENTS = 32  # Number of parallel agents. Used for creating a Trajectory when training the model.
 N_EVAL_AGENTS = 1  # Number of parallel agents. Used for creating a Trajectory when evaluating the model.
 
@@ -15,6 +15,9 @@ ENVIRONMENT_TYPE = LeaperEnvironment  # The environment type. Valid values ['Nin
 WEIGHTS_PATH = 'weights/ppo_leaper'  # Path where model weights are saved
 LOGS_PATH = 'logs'  # Path where execution logs are saved
 
+# ----------------------------------------
+# TRAINER SETTINGS
+# ----------------------------------------
 # Dictionary containing all the configurations used during the training of the model.
 train_config = {
     'n_agents': N_AGENTS,
@@ -44,15 +47,16 @@ evaluation_config = {
 # ----------------------------------------
 # AGENT CONFIGURATION
 # ----------------------------------------
-# Common configurations
-agent_config = {
+# Common agent configurations
+base_agent_config = {
     'backbone_type': BACKBONE_TYPE,
-    'learning_rate': 5e-4
+    'learning_rate': 5e-4,
+    'n_actions': 15
 }
 
 # PPO agent specific settings
 ppo_agent_config = {
-    **agent_config,
+    **base_agent_config,
     'clip_ratio': 0.2,
     'entropy_bonus_coefficient': 0.01,
     'critic_loss_coefficient': 0.5,
@@ -61,7 +65,7 @@ ppo_agent_config = {
 
 # REINFORCE agent specific settings
 reinfoce_agent_config = {
-    **agent_config,
+    **base_agent_config,
     'with_baseline': False
 }
 
