@@ -28,4 +28,4 @@ It is possible to train the model just by setting **TRAIN=True**. This variable 
 **WARNING**: if you need to train a new model from scratch, then you should also update the WEIGHTS_PATH, so as to avoid to load the weights of the pretrained models.
 
 ## Project details
-The code is already well commented where necessary. Additionally, it is possible to find all the theoretical details used for creating the model in the file **assets/aas-report.py**.
+When necessary, the code is already well commented. Additionally, it is possible to find all the theoretical details used for creating the model in the file **assets/aas-report.py**.
