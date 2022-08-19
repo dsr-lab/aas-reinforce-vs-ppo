@@ -8,7 +8,7 @@ N_AGENTS = 32  # Number of parallel agents. Used for creating a Trajectory when 
 N_EVAL_AGENTS = 1  # Number of parallel agents. Used for creating a Trajectory when evaluating the model.
 
 AGENT_TYPE = 'ppo'  # The agent to use. Valid values ['ppo', 'reinforce']
-BACKBONE_TYPE = 'impala'  # The backbone/feature extractor tupe. Valid values ['impala', 'nature']
+BACKBONE_TYPE = 'impala'  # The backbone/feature extractor type. Valid values ['impala', 'nature']
 ENVIRONMENT_TYPE = LeaperEnvironment  # The environment type. Valid values ['NinjaEnvironment', 'LeaperEnvironment',
                                       # 'CoinrunEnvironment']
 
