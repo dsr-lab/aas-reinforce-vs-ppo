@@ -38,6 +38,9 @@ def main():
 
     trainer_type, agent_config = get_trainer_configurations(env.n_actions)
 
+    print(f'Agent configuration:')
+    print(json.dumps(agent_config, indent=4))
+
     if config.TRAIN:
         print(f'Train configuration:')
         print(json.dumps(config.train_config, indent=4))
