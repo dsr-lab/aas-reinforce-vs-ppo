@@ -66,7 +66,7 @@ ppo_agent_config = {
 # REINFORCE agent specific settings
 reinfoce_agent_config = {
     **base_agent_config,
-    'with_baseline': False
+    'with_baseline': True
 }
 
 # ----------------------------------------
