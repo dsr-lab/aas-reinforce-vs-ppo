@@ -11,16 +11,10 @@ The project is already configured to:
 * save the recording of the matches inside the **/recordings** directory
 
 ## Test other games
-It is possible to test the trained model on the other games. For doing it, it is necessary to update two constants that can be found in the file **config.py**: 
-
-* WEIGHT_PATH with one of the following values:
-  - weights/ppo_leaper
-  - weights/ppo_ninja
-  - weights/ppo_coinrun
-* ENVIRONMENT_TYPE, with one of the following values:
-  - LeaperEnvironment
-  - NinjaEnvironment
-  - CoinrunEnvironment
+It is possible to test the trained model also on other games. For doing it, it is necessary to update the ENVIRONMENT_TYPE, which can be found in the file **config.py**. Possible values are: 
+* LeaperEnvironment
+* NinjaEnvironment
+* CoinrunEnvironment
  
 ## Train
 It is possible to train the model just by setting **TRAIN=True**. This variable can be found inside the **config.py** file.

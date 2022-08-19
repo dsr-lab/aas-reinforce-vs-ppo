@@ -1,5 +1,23 @@
 from environment.env_wrapper import RenderMode, NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
 
+
+# ----------------------------------------
+# UTILITY FUNCTIONS
+# ----------------------------------------
+def get_weights_path(environment_type):
+
+    if environment_type is LeaperEnvironment:
+        path = 'weights/ppo_leaper'
+    elif environment_type is NinjaEnvironment:
+        path = 'weights/ppo_ninja'
+    elif environment_type is CoinrunEnvironment:
+        path = 'weights/ppo_coinrun'
+    else:
+        path = 'weights'
+
+    return path
+
+
 # ----------------------------------------
 # COMMON SETTINGS
 # ----------------------------------------
@@ -9,10 +27,10 @@ N_EVAL_AGENTS = 1  # Number of parallel agents. Used for creating a Trajectory w
 
 AGENT_TYPE = 'ppo'  # The agent to use. Valid values ['ppo', 'reinforce']
 BACKBONE_TYPE = 'impala'  # The backbone/feature extractor type. Valid values ['impala', 'nature']
-ENVIRONMENT_TYPE = LeaperEnvironment  # The environment type. Valid values ['NinjaEnvironment', 'LeaperEnvironment',
-                                      # 'CoinrunEnvironment']
+ENVIRONMENT_TYPE = LeaperEnvironment    # The environment type. Valid values ['NinjaEnvironment', 'LeaperEnvironment',
+                                        # 'CoinrunEnvironment']
 
-WEIGHTS_PATH = 'weights/ppo_leaper'  # Path where model weights are saved
+WEIGHTS_PATH = get_weights_path(ENVIRONMENT_TYPE)  # Path where model weights are saved
 LOGS_PATH = 'logs'  # Path where execution logs are saved
 
 # ----------------------------------------
