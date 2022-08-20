@@ -97,5 +97,5 @@ environment_config = {
                                    # Valid values [RenderMode.off, RenderMode.on].
 
     'save_video': True             # If render_mode is on and save_video is True, then the video will be saved in
-                                   # the recordings directory rather than seeing it on the screen.
+                                   # the recordings directory, rather than seeing it on the screen.
 }

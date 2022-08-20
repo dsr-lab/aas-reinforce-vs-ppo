@@ -18,7 +18,7 @@ class Agent(tf.keras.Model):
         Parameters
         ----------
         n_actions: int
-            The number of actions that the agent can do. Its value corresponds to the number of outputs the Actor.
+            The number of actions that the agent can do. Its value corresponds to the number of outputs of the Actor.
         learning_rate: float
             The learning rate used for initializing the Optimizer
         backbone_type: str

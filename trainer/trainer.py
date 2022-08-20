@@ -16,7 +16,7 @@ class Trainer:
     Convenience class responsible of:
      - creating the model
      - creating the trajectory
-     - trainining the model
+     - trainining or evaluating the model
     """
     def __init__(self,
                  environment: EnvironmentWrapper,
@@ -35,7 +35,7 @@ class Trainer:
                  ):
 
         """
-        Init the trainer and all the required objects for training or evaluating an Agent.
+        Init the Trainer class and all the required objects for training or evaluating an Agent.
 
         Parameters
         ----------

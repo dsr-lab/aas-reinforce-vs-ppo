@@ -19,7 +19,7 @@ class PPOTrainer(Trainer):
         environment: EnvironmentWrapper
             The environment type. Valid values are: NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
         agent_config: dict
-            Dictionary containing all configurations required for the Agent
+            Dictionary containing all configurations required for the PPOAgent
         trainer_config: dict
             Dictionary containing common configurations used for initializing the parent object (Trainer)
         """
@@ -30,7 +30,7 @@ class PPOTrainer(Trainer):
 
     def update_model_weights(self, trajectory):
         """
-        Update the model weights according to the PPO paper (i.e., use the same trajectory for update the model
+        Update the model weights according to the PPO paper (i.e., use the same trajectory for updating the model
         multiple times).
 
         Parameters

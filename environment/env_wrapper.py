@@ -70,8 +70,7 @@ class EnvironmentWrapper:
 
     def _configure_actions(self, model_output_to_actions):
         """
-        Create the number of actions that are managed by the model that uses these environments. This can be useful
-        especially if limiting the possible number of actions for helping the training procedure.
+        Create a dictionary for mapping the output of the Actor with the actions supported by the environment.
 
         Parameters
         ----------
@@ -86,8 +85,8 @@ class EnvironmentWrapper:
         n_actions: int
             The number of actions supported by both the model and the environment.
         model_output_to_actions: dict
-            If not None, then it is same dictionary passed as input. Otherwise, it's a new dictionary that maps all the
-            14 actions supported by the environment.
+            If initially not None, then it is same dictionary passed as input. Otherwise, it's a new dictionary that
+            maps all the 15 actions supported by the environment.
 
         """
         if model_output_to_actions is None:

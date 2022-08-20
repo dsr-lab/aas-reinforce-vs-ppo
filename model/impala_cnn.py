@@ -2,7 +2,9 @@ import tensorflow as tf
 
 
 class ImpalaNet(tf.keras.Model):
-
+    """
+    Class used for creating the Impala-CNN backbone
+    """
     def __init__(self, depths=[16, 32, 64]):
 
         super(ImpalaNet, self).__init__()

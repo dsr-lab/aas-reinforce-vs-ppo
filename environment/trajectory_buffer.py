@@ -71,7 +71,7 @@ class TrajectoryBuffer:
         This method is necessary to penalize the losses, because the environment always returns a 0-reward also
         in case of a loss.
 
-        What we have is the firsts array, which contains the position of new episodes. Example:
+        What we have is the self.firsts array, which contains the position of new episodes. Example:
 
             | time_step  |  new_episode  |
             -----------------------------
@@ -92,17 +92,17 @@ class TrajectoryBuffer:
           - The first row is always True, because at the beginning of a trajectory the environment is reset,
             and new episodes are started. Thus, that line is removed from the array, also because it would not
             be possible to penalize previous time steps.
-          - In order to keep the dimensions a new row is added at the end, composed by only False values. This happens
-            because we never need to possibly penalize the last row of a trajectory, because we cannot know wheter the
-            next time step would cause a win or a loss.
+          - In order to keep the dimensions a new row is added at the end, composed by only False values. This can be
+            done because we never need to possibly penalize the last row of a trajectory, because we cannot know wheter
+            the next time step would cause a win or a loss.
 
         Parameters
         ----------
         update_also_true_rewards: bool
             If this flag is set to true, then also the self.true_rewards array is updated. Basically, it will be equal
             to the self.rewards array.
-            This flag should be set to True ONLY if for the future computing of advantages and returns must take in
-            consideration also negative rewards (see the report section 'Credit assignment problem' )
+            This flag should be set to True ONLY if for computing of advantages and returns must take in consideration
+            also negative rewards (see the report section 'Credit assignment problem' )
 
         """
         shifted_first = self.firsts[1:, :]

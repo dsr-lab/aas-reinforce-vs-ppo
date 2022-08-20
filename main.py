@@ -11,7 +11,11 @@ def create_required_directories():
     Path(config.WEIGHTS_PATH).mkdir(parents=True, exist_ok=True)
 
 
-def get_configurations(n_actions):
+def get_environment():
+    return config.ENVIRONMENT_TYPE(**config.environment_config)
+
+
+def get_trainer_configurations(n_actions):
 
     if config.AGENT_TYPE == 'ppo':
         trainer_type = PPOTrainer
@@ -31,13 +35,12 @@ def get_configurations(n_actions):
 def main():
     create_required_directories()
 
-    env = config.ENVIRONMENT_TYPE(**config.environment_config)
+    env = get_environment()
+
+    trainer_type, agent_config = get_trainer_configurations(env.n_actions)
 
     print(f'Policy: {config.AGENT_TYPE}')
     print(f'Environment: {config.ENVIRONMENT_TYPE.__name__}')
-
-    trainer_type, agent_config = get_configurations(env.n_actions)
-
     print(f'Agent configuration:')
     print(json.dumps(agent_config, indent=4))
 

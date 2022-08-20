@@ -14,7 +14,8 @@ class ReinforceAgent(Agent):
         critic_loss_coefficient: float
             Coefficient used for scaling the critic loss (called c1 in the original PPO paper)
         base_agent_config: dict
-            Dictionary containing all the configuration required for initializing an instance of Agent class
+            Dictionary containing all the configuration required for initializing an instance of Agent class (i.e.,
+            the parent class)
         """
 
         super(ReinforceAgent, self).__init__(**base_agent_config)

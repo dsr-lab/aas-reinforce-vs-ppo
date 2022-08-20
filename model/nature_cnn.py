@@ -2,7 +2,9 @@ import tensorflow as tf
 
 
 class NatureNet(tf.keras.Model):
-
+    """
+    Class used for creating the Nature-CNN backbone
+    """
     def __init__(self):
 
         super(NatureNet, self).__init__()

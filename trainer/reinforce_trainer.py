@@ -18,7 +18,7 @@ class ReinforceTrainer(Trainer):
         environment: EnvironmentWrapper
             The environment type. Valid values are: NinjaEnvironment, LeaperEnvironment, CoinrunEnvironment
         agent_config: dict
-            Dictionary containing all configurations required for the Agent
+            Dictionary containing all configurations required for the ReiforceAgent
         trainer_config: dict
             Dictionary containing common configurations used for initializing the parent object (Trainer)
         """

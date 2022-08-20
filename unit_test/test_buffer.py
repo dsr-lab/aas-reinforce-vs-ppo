@@ -21,13 +21,13 @@ class TestBuffer(TestCase):
                 [0, 0],
                 [0, 0],
                 [0, 10],
-                [0, 0],  # Episode end at [3, 1] (Success)
-                [0, 0],   # Episode end at [4, 0] (Fail)
                 [0, 0],
-                [0, 0],   # Episode end at [6, 1] (Fail)
+                [0, 0],
+                [0, 0],
+                [0, 0],
                 [10, 0],
                 [0, 10],
-                [0, 0]   # Episode end at [9, 0] (Success)
+                [0, 0]
             ])
 
         cls.first = np.asarray(
@@ -93,13 +93,13 @@ class TestBuffer(TestCase):
                 [0, 0],
                 [0, 0],
                 [0, 0],
-                [0, 0],  # Episode end at [3, 1] (Success)
-                [0, 0],  # Episode end at [4, 0] (Fail)
-                [0, 0],
-                [0, 0],  # Episode end at [6, 1] (Fail)
                 [0, 0],
                 [0, 0],
-                [0, 0]  # Episode end at [9, 0] (Success)
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0],
+                [0, 0]
             ])
 
         first = np.asarray(
@@ -136,13 +136,13 @@ class TestBuffer(TestCase):
                 [0, 0],
                 [0, 0],
                 [0, 0],
-                [0, 0],  # Episode end at [3, 1] (Success)
-                [0, 0],  # Episode end at [4, 0] (Fail)
                 [0, 0],
-                [0, 0],  # Episode end at [6, 1] (Fail)
+                [0, 0],
+                [0, 0],
+                [0, 0],
                 [0, 0],
                 [0, 10],
-                [0, 0]  # Episode end at [9, 0] (Success)
+                [0, 0]
             ])
 
         first = np.asarray(
