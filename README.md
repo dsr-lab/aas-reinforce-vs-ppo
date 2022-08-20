@@ -19,7 +19,7 @@ It is possible to test the trained model also on other games. For doing it, it i
 ## Train
 It is possible to train the model just by setting **TRAIN=True**. This variable can be found inside the **config.py** file.
 
-**WARNING**: if you need to train a new model from scratch, then you should also update the WEIGHTS_PATH, so as to avoid to load the weights of the pretrained models.
+**WARNING**: if you need to train a new model from scratch, then you should also update the **WEIGHTS_PATH**, so as to avoid to automatically load the weights of the pretrained models.
 
 ## Project details
 Where necessary, the code is already well commented. Additionally, it is possible to find all the theoretical details used for creating the model in the file **assets/aas-report.py**.
