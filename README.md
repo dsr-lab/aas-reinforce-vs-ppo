@@ -23,3 +23,24 @@ It is possible to train the model just by setting **TRAIN=True**. This variable 
 
 ## Project details
 Where necessary, the code is already well commented. Additionally, it is possible to find all the theoretical details used for creating the model in the file **assets/aas-report.py**.
+
+## RECORDINGS
+Some recordings taken with the trained models on each game.
+
+### Leaper
+<p float="left">
+  <img src="assets/gif/leaper_1.gif" width="250" height="250"/>
+  <img src="assets/gif/leaper_2.gif" width="250" height="250"/>
+</p>
+
+### Ninja
+<p float="left">
+  <img src="assets/gif/ninja_1.gif" width="250" height="250"/>
+  <img src="assets/gif/ninja_2.gif" width="250" height="250"/>
+</p>
+
+### Coinrun
+<p float="left">
+  <img src="assets/gif/coinrun_1.gif" width="250" height="250"/>
+  <img src="assets/gif/coinrun_2.gif" width="250" height="250"/>
+</p>
