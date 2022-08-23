@@ -3,7 +3,7 @@ Policy gradient methods have been already used for solving a huge variety of rei
 The implementation and the experiments are based on three different environments, found in the OpenAI’s Procgen Benchmark. In particular, the environments are: Coinrun, Ninja and Leaper.
 
 ## Run the project
-For running the project it is sufficient to have installed all the dependecies specified in the [**requirements**](requirements.txt), and then execute the file [**main**](main.py).
+For running the project it is sufficient to have installed all the dependecies specified in the [**requirements**](requirements.txt), and then execute the [**main.py**](main.py).
 
 The project is already configured to:
 * load the model weights for the Leaper game
